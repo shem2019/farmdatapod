@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/homePageFragment">
+
+    <fragment
+        android:id="@+id/homePageFragment"
+        android:name="com.example.farmdatapod.auth.HomepageFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_homepage">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_hubLandingPageFragment"
+            app:destination="@id/hubLandingPageFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_produceLandingPageFragment"
+            app:destination="@id/produceLandingPageFragment" />
+
+        <action
+            android:id="@+id/action_homePageFragment_to_priceDistributionLandingPageFragment"
+            app:destination="@id/priceDistributionLandingPageFragment" />
+
+        <action
+            android:id="@+id/action_homePageFragment_to_ruralWorkerInformationFragment"
+            app:destination="@id/ruralWorkerInformationFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_processingInformationFragment"
+            app:destination="@id/processingInformationFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_logisticsLandingPageFragment2"
+            app:destination="@id/logisticsLandingPageFragment2" />
+
+        <action
+            android:id="@+id/action_homePageFragment_to_trainingLandingPageFragment"
+            app:destination="@id/trainingLandingPageFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_extensionsFragment"
+            app:destination="@id/extensionsFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_sellingFragment"
+            app:destination="@id/sellingFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_receivePaymentFragment"
+            app:destination="@id/receivePaymentFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_makePaymentFragment"
+            app:destination="@id/makePaymentFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_seasonsLandingPageFragment"
+            app:destination="@id/seasonsLandingPageFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_cropManagementLandingPageFragment"
+            app:destination="@id/cropManagementLandingPageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/hubRegistrationFragment"
+        android:name="com.example.farmdatapod.hub.hubRegistration.HubRegistrationFragment"
+        android:label="fragment_hub_registration"
+        tools:layout="@layout/fragment_hub_registration" />
+    <fragment
+        android:id="@+id/hubLandingPageFragment"
+        android:name="com.example.farmdatapod.hub.HubLandingPageFragment"
+        android:label="fragment_hub_landing_page"
+        tools:layout="@layout/fragment_hub_landing_page">
+
+        <action
+            android:id="@+id/action_hubLandingPageFragment_to_hubRegistrationFragment"
+            app:destination="@id/hubRegistrationFragment" />
+        <action
+            android:id="@+id/action_hubLandingPageFragment_to_hubAggregationLandingPageFragment"
+            app:destination="@id/hubAggregationLandingPageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/buyingCenterFragment"
+        android:name="com.example.farmdatapod.hub.hubAggregation.buyingCenter.BuyingCenterFragment"
+        android:label="BuyingCenterFragment"
+        tools:layout="@layout/fragment_buying_center" />
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.farmdatapod.userregistration.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category">
+        <action
+            android:id="@+id/action_categoryFragment_to_hubUserRegistrationFragment"
+            app:destination="@id/hubUserRegistrationFragment" />
+        <action
+            android:id="@+id/action_categoryFragment_to_departmentsFragment"
+            app:destination="@id/departmentsFragment" />
+        <action
+            android:id="@+id/action_categoryFragment_to_logisticsLandingPageFragment"
+            app:destination="@id/logisticsLandingPageFragment" />
+
+        <action
+            android:id="@+id/action_categoryFragment_to_processingLandingPageFragment"
+            app:destination="@id/processingLandingPageFragment" />
+        <action
+            android:id="@+id/action_categoryFragment_to_customersLandingPageFragment"
+            app:destination="@id/customersLandingPageFragment" />
+
+        <action
+            android:id="@+id/action_categoryFragment_to_customUsersFragment"
+            app:destination="@id/customUsersFragment" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/CIGFragment"
+        android:name="com.example.farmdatapod.hub.hubAggregation.cig.CIGFragment"
+        android:label="CIGFragment"
+        tools:layout="@layout/fragment_cig" />
+    <fragment
+        android:id="@+id/hubUserRegistrationFragment"
+        android:name="com.example.farmdatapod.userregistration.hubusers.HubUserRegistrationFragment"
+        android:label="HubUserRegistrationFragment"
+        tools:layout="@layout/fragment_hub_user_registration" />
+    <fragment
+        android:id="@+id/departmentsFragment"
+        android:name="com.example.farmdatapod.userregistration.hq.DepartmentsFragment"
+        android:label="fragment_departments"
+        tools:layout="@layout/fragment_departments">
+        <action
+            android:id="@+id/action_departmentsFragment_to_departmentUserRegistrationFragment"
+            app:destination="@id/departmentUserRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/departmentUserRegistrationFragment"
+        android:name="com.example.farmdatapod.userregistration.hq.DepartmentUserRegistrationFragment"
+        android:label="DepartmentUserRegistrationFragment"
+        tools:layout="@layout/fragment_department_user_registration" />
+    <fragment
+
+        android:id="@+id/individualLogisticianFragment"
+        android:name="com.example.farmdatapod.userregistration.logistics.IndividualLogisticianFragment"
+        android:label="IndividualLogisticianFragment"
+        tools:layout="@layout/fragment_individual_logistician_registration" />
+    <fragment
+        android:id="@+id/logisticsLandingPageFragment"
+        android:name="com.example.farmdatapod.userregistration.logistics.LogisticsLandingPageFragment"
+        android:label="LogisticsLandingPageFragment"
+        tools:layout="@layout/fragment_logistics_landing_page">
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment_to_individualLogisticianFragment"
+            app:destination="@id/individualLogisticianFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment_to_organisationalLogisticianRegistrationFragment"
+            app:destination="@id/organisationalLogisticianRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/organisationalLogisticianRegistrationFragment"
+        android:name="com.example.farmdatapod.userregistration.logistics.OrganisationalLogisticianRegistrationFragment"
+        android:label="fragment_organisational_logistician_registration"
+        tools:layout="@layout/fragment_organisational_logistician_registration" />
+
+    <fragment
+        android:id="@+id/processingLandingPageFragment"
+        android:name="com.example.farmdatapod.userregistration.processing.ProcessingLandingPageFragment"
+        android:label="ProcessingLandingPageFragment"
+        tools:layout="@layout/fragment_processing_landing_page">
+        <action
+            android:id="@+id/action_processingLandingPageFragment_to_processingPlantRegistrationFragment"
+            app:destination="@id/processingPlantRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/processingPlantRegistrationFragment"
+        android:name="com.example.farmdatapod.userregistration.processing.ProcessingPlantRegistrationFragment"
+        android:label="ProcessingPlantRegistrationFragment"
+        tools:layout="@layout/fragment_processing_plant_registration" />
+    <fragment
+        android:id="@+id/customersLandingPageFragment"
+        android:name="com.example.farmdatapod.userregistration.customers.CustomersLandingPageFragment"
+        android:label="CustomersLandingPageFragment"
+        tools:layout="@layout/fragment_customers_landing_page">
+        <action
+            android:id="@+id/action_customersLandingPageFragment_to_organisationCustomerFragment"
+            app:destination="@id/organisationCustomerFragment" />
+        <action
+            android:id="@+id/action_customersLandingPageFragment_to_individualCustomerFragment"
+            app:destination="@id/individualCustomerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/individualCustomerFragment"
+        android:name="com.example.farmdatapod.userregistration.customers.IndividualCustomerFragment"
+        android:label="IndividualCustomerFragment"
+        tools:layout="@layout/fragment_individual_customer" />
+    <fragment
+        android:id="@+id/organisationCustomerFragment"
+        android:name="com.example.farmdatapod.userregistration.customers.OrganisationCustomerFragment"
+        android:label="fragment_organisation_customer"
+        tools:layout="@layout/fragment_organisation_customer" />
+
+    <fragment
+        android:id="@+id/baselineInformationFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.BaselineInformationFragment"
+        android:label="BaselineInformationFragment"
+        tools:layout="@layout/fragment_baseline_information" >
+        <action
+            android:id="@+id/action_baselineInformationFragment_to_labourAndChallengesFragment"
+            app:destination="@id/labourAndChallengesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/basicInformationFragment"
+        android:label="BasicInformationFragment"
+        tools:layout="@layout/fragment_basic_information" >
+        <action
+            android:id="@+id/action_basicInformationFragment_to_baselineInformationFragment"
+            app:destination="@id/baselineInformationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/infrastructureInformationFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.InfrastructureInformationFragment"
+        android:label="InfrastructureInformationFragment"
+        tools:layout="@layout/fragment_infrastructure_information" >
+        <action
+            android:id="@+id/action_infrastructureInformationFragment_to_produceInformationFragment2"
+            app:destination="@id/produceInformationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/labourAndChallengesFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.LabourAndChallengesFragment"
+        android:label="LabourAndChallengesFragment"
+        tools:layout="@layout/fragment_labour_and_challenges" >
+        <action
+            android:id="@+id/action_labourAndChallengesFragment_to_livestockInformationFragment"
+            app:destination="@id/livestockInformationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/producerBioDataFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.ProducerBioDataFragment"
+        android:label="ProducerBioDataFragment"
+        tools:layout="@layout/fragment_producer_bio_data" >
+        <action
+            android:id="@+id/action_producerBioDataFragment_to_basicInformationFragment"
+            app:destination="@id/basicInformationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/produceInformationFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.ProduceInformationFragment"
+        android:label="ProduceInformationFragment"
+        tools:layout="@layout/fragment_produce_information" />
+    <fragment
+        android:id="@+id/livestockInformationFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.LivestockInformationFragment"
+        android:label="LivestockInformationFragment"
+        tools:layout="@layout/fragment_livestock_information" >
+        <action
+            android:id="@+id/action_livestockInformationFragment_to_infrastructureInformationFragment"
+            app:destination="@id/infrastructureInformationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/produceLandingPageFragment"
+        android:name="com.example.farmdatapod.produce.ProduceLandingPageFragment"
+        android:label="ProduceLandingPageFragment"
+        tools:layout="@layout/fragment_produce_landing_page">
+        <action
+            android:id="@+id/action_produceLandingPageFragment_to_independentProducerLandingPageFragment"
+            app:destination="@id/independentProducerLandingPageFragment">
+            <argument
+                android:name="producerType"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/produceFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.ProduceFragment"
+        android:label="ProduceFragment"
+        tools:layout="@layout/fragment_produce_host">
+        <argument
+            android:name="producerType"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_produceFragment_to_producerBioDataFragment"
+            app:destination="@id/producerBioDataFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/independentProducerLandingPageFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.IndependentProducerLandingPageFragment"
+        android:label="IndependentProducerLandingPageFragment"
+        tools:layout="@layout/fragment_indipendent_producer_landing_page">
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_produceFragment"
+            app:destination="@id/produceFragment" />
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_fieldRegistrationFragment"
+            app:destination="@id/fieldRegistrationFragment">
+            <argument
+                android:name="producerType"
+                app:argType="string" />
+        </action>
+        <argument
+            android:name="producerType"
+            app:argType="string" />
+    </fragment>
+    
+    <fragment
+        android:id="@+id/independentProducerLandingPageFragment5"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.IndependentProducerLandingPageFragment"
+        android:label="IndependentProducerLandingPageFragment"
+        tools:layout="@layout/fragment_indipendent_producer_landing_page">
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_produceFragment"
+            app:destination="@id/produceFragment" />
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_fieldRegistrationFragment"
+            app:destination="@id/fieldRegistrationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/independentProducerLandingPageFragment2"
+        android:name="com.example.farmdatapod.produce.indipendent.biodata.IndependentProducerLandingPageFragment"
+        android:label="IndependentProducerLandingPageFragment"
+        tools:layout="@layout/fragment_indipendent_producer_landing_page">
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_produceFragment"
+            app:destination="@id/produceFragment" />
+        <action
+            android:id="@+id/action_independentProducerLandingPageFragment_to_fieldRegistrationFragment"
+            app:destination="@id/fieldRegistrationFragment">
+            <argument
+                android:name="producerType"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fieldRegistrationFragment"
+        android:name="com.example.farmdatapod.produce.indipendent.fieldregistration.FieldRegistrationFragment"
+        android:label="FieldRegistrationFragment"
+        tools:layout="@layout/fragment_field_registration">
+        <argument
+            android:name="producerType"
+            app:argType="string"
+            android:defaultValue="default_value" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/planTrainingFragment"
+        tools:layout="@layout/fragment_plan_training"
+        android:name="com.example.farmdatapod.training.PlanTrainingFragment"
+        android:label="PlanTrainingFragment" />
+    <fragment
+        android:id="@+id/customerPriceDistributionFragment"
+        tools:layout="@layout/fragment_customer_price_distribution"
+        android:name="com.example.farmdatapod.pricedistribution.CustomerPriceDistributionFragment"
+        android:label="CustomerPriceDistributionFragment" />
+    <fragment
+        android:id="@+id/priceDistributionLandingPageFragment"
+        tools:layout="@layout/fragment_price_distribution_landing_page"
+        android:name="com.example.farmdatapod.pricedistribution.PriceDistributionLandingPageFragment"
+        android:label="PriceDistributionLandingPageFragment" >
+        <action
+            android:id="@+id/action_priceDistributionLandingPageFragment_to_farmerPriceDistributionFragment"
+            app:destination="@id/farmerPriceDistributionFragment" />
+        <action
+            android:id="@+id/action_priceDistributionLandingPageFragment_to_customerPriceDistributionFragment"
+            app:destination="@id/customerPriceDistributionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/farmerPriceDistributionFragment"
+        tools:layout="@layout/fragment_farmer_price_distribution"
+        android:name="com.example.farmdatapod.pricedistribution.FarmerPriceDistributionFragment"
+        android:label="FarmerPriceDistributionFragment" />
+
+    <fragment
+        android:id="@+id/ruralWorkerInformationFragment"
+        tools:layout="@layout/fragment_rural_worker_information"
+        android:name="com.example.farmdatapod.ruralworker.RuralWorkerInformationFragment"
+        android:label="RuralWorkerInformationFragment" />
+    <fragment
+        android:id="@+id/processingInformationFragment"
+        tools:layout="@layout/fragment_processing_information"
+        android:name="com.example.farmdatapod.processing.ProcessingInformationFragment"
+        android:label="ProcessingInformationFragment" />
+    <fragment
+        android:id="@+id/logisticsLandingPageFragment2"
+        tools:layout="@layout/fragment_logistics_landing_page"
+        android:name="com.example.farmdatapod.logistics.LogisticsLandingPageFragment"
+        android:label="LogisticsLandingPageFragment" >
+
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_createRouteFragment"
+            app:destination="@id/createRouteFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_planJourneyFragment"
+            app:destination="@id/planJourneyFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_journeyStatusFragment"
+            app:destination="@id/journeyStatusFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_equipmentAllocationFragment"
+            app:destination="@id/equipmentAllocationFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_inputAllocationFragment"
+            app:destination="@id/inputAllocationFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_inputTransferFragment"
+            app:destination="@id/inputTransferFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_inboundLandingPageFragment"
+            app:destination="@id/inboundLandingPageFragment" />
+        <action
+            android:id="@+id/action_logisticsLandingPageFragment2_to_outboundLandingPageFragment"
+            app:destination="@id/outboundLandingPageFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/trainingLandingPageFragment"
+        tools:layout="@layout/fragment_training_landing_page"
+        android:name="com.example.farmdatapod.training.TrainingLandingPageFragment"
+        android:label="TrainingLandingPageFragment" >
+        <action
+            android:id="@+id/action_trainingLandingPageFragment_to_viewTrainingFragment"
+            app:destination="@id/viewTrainingFragment" />
+        <action
+            android:id="@+id/action_trainingLandingPageFragment_to_planTrainingFragment"
+            app:destination="@id/planTrainingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/viewTrainingFragment"
+        tools:layout="@layout/fragment_view_training"
+        android:name="com.example.farmdatapod.training.ViewTrainingFragment"
+        android:label="ViewTrainingFragment" />
+    <fragment
+        android:id="@+id/extensionsFragment"
+        tools:layout="@layout/fragment_extensions"
+        android:name="com.example.farmdatapod.extention.ExtensionsFragment"
+        android:label="ExtensionsFragment" />
+    <fragment
+        android:id="@+id/sellingFragment"
+        tools:layout="@layout/fragment_selling"
+        android:name="com.example.farmdatapod.selling.SellingFragment"
+        android:label="SellingFragment" />
+    <fragment
+        android:id="@+id/customUsersFragment"
+        tools:layout="@layout/fragment_custom_users"
+        android:name="com.example.farmdatapod.userregistration.custom.CustomUsersFragment"
+        android:label="CustomUsersFragment" />
+    <fragment
+        android:id="@+id/receivePaymentFragment"
+        tools:layout="@layout/fragment_receive_payment"
+        android:name="com.example.farmdatapod.receivepayments.ReceivePaymentFragment"
+        android:label="ReceivePaymentFragment" />
+    <fragment
+        android:id="@+id/makePaymentFragment"
+        tools:layout="@layout/fragment_make_payment"
+        android:name="com.example.farmdatapod.makepayments.MakePaymentFragment"
+        android:label="MakePaymentFragment" />
+    <fragment
+        android:id="@+id/seasonsLandingPageFragment"
+        android:name="com.example.farmdatapod.season.SeasonsLandingPageFragment"
+        android:label="fragment_seasons_landing_page"
+        tools:layout="@layout/fragment_seasons_landing_page" >
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_baitScoutingFragmentFragment"
+            app:destination="@id/baitScoutingFragmentFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_cropManagementFragment"
+            app:destination="@id/cropManagementFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_cropNutritionFragment"
+            app:destination="@id/cropNutritionFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_cropProtectionFragment"
+            app:destination="@id/cropProtectionFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_germinationPlanningFragment"
+            app:destination="@id/germinationPlanningFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_harvestPlanningFragment"
+            app:destination="@id/harvestPlanningFragment" />
+
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_nurseryPlanningFragment"
+            app:destination="@id/nurseryPlanningFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_planPlantingFragment"
+            app:destination="@id/planPlantingFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_registerSeasonFragment"
+            app:destination="@id/registerSeasonFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_yieldForecastFragment"
+            app:destination="@id/yieldForecastFragment" />
+        <action
+            android:id="@+id/action_seasonsLandingPageFragment_to_landPreparationFragment"
+            app:destination="@id/landPreparationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/baitScoutingFragmentFragment"
+        tools:layout="@layout/fragment_bait_scouting_fragment"
+        android:name="com.example.farmdatapod.season.scouting.BaitScoutingFragmentFragment"
+        android:label="BaitScoutingFragmentFragment" />
+    <fragment
+        android:id="@+id/cropManagementFragment"
+        tools:layout="@layout/fragment_crop_management"
+        android:name="com.example.farmdatapod.season.cropManagement.CropManagementFragment"
+        android:label="CropManagementFragment" />
+    <fragment
+        android:id="@+id/cropNutritionFragment"
+        tools:layout="@layout/fragment_crop_nutrition"
+        android:name="com.example.farmdatapod.season.nutrition.CropNutritionFragment"
+        android:label="CropNutritionFragment" />
+    <fragment
+        android:id="@+id/cropProtectionFragment"
+        tools:layout="@layout/fragment_crop_protection"
+        android:name="com.example.farmdatapod.season.cropProtection.CropProtectionFragment"
+        android:label="CropProtectionFragment" />
+    <fragment
+        android:id="@+id/germinationPlanningFragment"
+        tools:layout="@layout/fragment_germination_planning"
+        android:name="com.example.farmdatapod.season.germination.GerminationPlanningFragment"
+        android:label="GerminationPlanningFragment" />
+    <fragment
+        android:id="@+id/harvestPlanningFragment"
+        tools:layout="@layout/fragment_harvest_planning"
+        android:name="com.example.farmdatapod.season.harvest.HarvestPlanningFragment"
+        android:label="HarvestPlanningFragment" />
+
+    <fragment
+        android:id="@+id/nurseryPlanningFragment"
+        tools:layout="@layout/fragment_nursery_planning"
+        android:name="com.example.farmdatapod.season.nursery.NurseryPlanningFragment"
+        android:label="NurseryPlanningFragment" />
+    <fragment
+        android:id="@+id/planPlantingFragment"
+        tools:layout="@layout/fragment_plan_planting"
+        android:name="com.example.farmdatapod.season.planting.PlanPlantingFragment"
+        android:label="PlanPlantingFragment" />
+    <fragment
+        android:id="@+id/registerSeasonFragment"
+        tools:layout="@layout/fragment_register_season"
+        android:name="com.example.farmdatapod.season.register.RegisterSeasonFragment"
+        android:label="RegisterSeasonFragment" />
+    <fragment
+        android:id="@+id/yieldForecastFragment"
+        tools:layout="@layout/fragment_yield_forecast"
+        android:name="com.example.farmdatapod.season.forecastYields.YieldForecastFragment"
+        android:label="YieldForecastFragment" />
+    <fragment
+        android:id="@+id/cropManagementLandingPageFragment"
+        tools:layout="@layout/fragment_crop_management_landing_page"
+        android:name="com.example.farmdatapod.cropmanagement.CropManagementLandingPageFragment"
+        android:label="CropManagementLandingPageFragment" >
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementActivitiesFragment"
+            app:destination="@id/cropManagementActivitiesFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementForecastYieldFragment"
+            app:destination="@id/cropManagementForecastYieldFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementHarvestingFragment"
+            app:destination="@id/cropManagementHarvestingFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementLandPreparationFragment"
+            app:destination="@id/cropManagementLandPreparationFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementNutritionFragment"
+            app:destination="@id/cropManagementNutritionFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropManagementScoutingFragment"
+            app:destination="@id/cropManagementScoutingFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_cropProtectionManagementFragment"
+            app:destination="@id/cropProtectionManagementFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_germinationCropManagementFragment"
+            app:destination="@id/germinationCropManagementFragment" />
+
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_plantingCropManagementFragment"
+            app:destination="@id/plantingCropManagementFragment" />
+        <action
+            android:id="@+id/action_cropManagementLandingPageFragment_to_nurseryManagementFragment"
+            app:destination="@id/nurseryManagementFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cropManagementActivitiesFragment"
+        tools:layout="@layout/fragment_crop_management_activities"
+        android:name="com.example.farmdatapod.cropmanagement.cropManagementActivities.CropManagementActivitiesFragment"
+        android:label="CropManagementActivitiesFragment" />
+    <fragment
+        android:id="@+id/cropManagementForecastYieldFragment"
+        tools:layout="@layout/fragment_crop_management_forecast_yield"
+        android:name="com.example.farmdatapod.cropmanagement.forecastYield.CropManagementForecastYieldFragment"
+        android:label="CropManagementForecastYieldFragment" />
+    <fragment
+        android:id="@+id/cropManagementHarvestingFragment"
+        tools:layout="@layout/fragment_crop_management_harvesting"
+        android:name="com.example.farmdatapod.cropmanagement.harvesting.CropManagementHarvestingFragment"
+        android:label="CropManagementHarvestingFragment" />
+    <fragment
+        android:id="@+id/cropManagementLandPreparationFragment"
+        tools:layout="@layout/fragment_crop_management_land_preparation"
+        android:name="com.example.farmdatapod.cropmanagement.landPreparation.CropManagementLandPreparationFragment"
+        android:label="CropManagementLandPreparationFragment" />
+    <fragment
+        android:id="@+id/cropManagementNutritionFragment"
+        tools:layout="@layout/fragment_crop_management_nutrition"
+        android:name="com.example.farmdatapod.cropmanagement.nutrition.CropManagementNutritionFragment"
+        android:label="CropManagementNutritionFragment" />
+    <fragment
+        android:id="@+id/cropManagementScoutingFragment"
+        tools:layout="@layout/fragment_crop_management_scouting"
+        android:name="com.example.farmdatapod.cropmanagement.scouting.CropManagementScoutingFragment"
+        android:label="CropManagementScoutingFragment" />
+    <fragment
+        android:id="@+id/cropProtectionManagementFragment"
+        tools:layout="@layout/fragment_crop_protection_management"
+        android:name="com.example.farmdatapod.cropmanagement.cropProtection.CropProtectionManagementFragment"
+        android:label="CropProtectionManagementFragment" />
+    <fragment
+        android:id="@+id/germinationCropManagementFragment"
+        tools:layout="@layout/fragment_germination_crop_management"
+        android:name="com.example.farmdatapod.cropmanagement.germination.GerminationCropManagementFragment"
+        android:label="GerminationCropManagementFragment" />
+
+    <fragment
+        android:id="@+id/plantingCropManagementFragment"
+        tools:layout="@layout/fragment_planting_crop_management"
+        android:name="com.example.farmdatapod.cropmanagement.planting.PlantingCropManagementFragment"
+        android:label="PlantingCropManagementFragment" />
+    <fragment
+        android:id="@+id/landPreparationFragment"
+        tools:layout="@layout/fragment_land_preparation"
+        android:name="com.example.farmdatapod.season.landPreparation.LandPreparationFragment"
+        android:label="LandPreparationFragment" />
+    <fragment
+        android:id="@+id/hubAggregationLandingPageFragment"
+        android:name="com.example.farmdatapod.hub.hubAggregation.HubAggregationLandingPageFragment"
+        android:label="fragment_hub_aggregation_landing_page"
+        tools:layout="@layout/fragment_hub_aggregation_landing_page" >
+        <action
+            android:id="@+id/action_hubAggregationLandingPageFragment_to_buyingCenterFragment"
+            app:destination="@id/buyingCenterFragment" />
+        <action
+            android:id="@+id/action_hubAggregationLandingPageFragment_to_CIGFragment"
+            app:destination="@id/CIGFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nurseryManagementFragment"
+        tools:layout="@layout/fragment_nursery_management"
+        android:name="com.example.farmdatapod.cropmanagement.nursery.NurseryManagementFragment"
+        android:label="NurseryManagementFragment" />
+    <fragment
+        android:id="@+id/createRouteFragment"
+        tools:layout="@layout/fragment_create_route"
+        android:name="com.example.farmdatapod.logistics.createRoute.CreateRouteFragment"
+        android:label="CreateRouteFragment" />
+    <fragment
+        android:id="@+id/planJourneyFragment"
+        tools:layout="@layout/fragment_plan_journey"
+        android:name="com.example.farmdatapod.logistics.planJourney.PlanJourneyFragment"
+        android:label="PlanJourneyFragment" />
+    <fragment
+        android:id="@+id/journeyStatusFragment"
+        tools:layout="@layout/fragment_journey_status"
+        android:name="com.example.farmdatapod.logistics.JourneyStatusFragment"
+        android:label="JourneyStatusFragment" />
+    <fragment
+        android:id="@+id/equipmentAllocationFragment"
+        tools:layout="@layout/fragment_equipment_allocation"
+        android:name="com.example.farmdatapod.logistics.equipments.EquipmentAllocationFragment"
+        android:label="EquipmentAllocationFragment" />
+    <fragment
+        android:id="@+id/inputAllocationFragment"
+        tools:layout="@layout/fragment_input_allocation"
+        android:name="com.example.farmdatapod.logistics.inputAllocation.InputAllocationFragment"
+        android:label="InputAllocationFragment" />
+    <fragment
+        android:id="@+id/inputTransferFragment"
+        android:name="com.example.farmdatapod.logistics.inputTransfer.InputTransferFragment"
+        android:label="InputTransferFragment" />
+
+    <fragment
+        android:id="@+id/outboundLandingPageFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.outboundLogistics.OutboundLandingPageFragment"
+        android:label="fragment_outbound_landing_page"
+        tools:layout="@layout/fragment_outbound_landing_page" >
+        <action
+            android:id="@+id/action_outboundLandingPageFragment_to_dispatchFragment"
+            app:destination="@id/dispatchFragment" />
+        <action
+            android:id="@+id/action_outboundLandingPageFragment_to_equipmentLoadingFragment"
+            app:destination="@id/equipmentLoadingFragment" />
+        <action
+            android:id="@+id/action_outboundLandingPageFragment_to_inputLoadingFragment"
+            app:destination="@id/inputLoadingFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/inboundLandingPageFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.inboundLogistics.InboundLandingPageFragment"
+        android:label="fragment_inbound_landing_page"
+        tools:layout="@layout/fragment_inbound_landing_page" >
+        <action
+            android:id="@+id/action_inboundLandingPageFragment_to_offloadingFragment"
+            app:destination="@id/offloadingFragment" />
+        <action
+            android:id="@+id/action_inboundLandingPageFragment_to_loadingFragment"
+            app:destination="@id/loadingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dispatchFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.outboundLogistics.dispatch.DispatchFragment"
+        android:label="fragment_dispatch"
+        tools:layout="@layout/fragment_dispatch" />
+    <fragment
+        android:id="@+id/equipmentLoadingFragment"
+        tools:layout="@layout/fragment_equipment_loading"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.outboundLogistics.equipmentLoading.EquipmentLoadingFragment"
+        android:label="EquipmentLoadingFragment" />
+    <fragment
+        android:id="@+id/inputLoadingFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.outboundLogistics.loadedInput.InputLoadingFragment"
+        android:label="InputLoadingFragment" />
+    <fragment
+        android:id="@+id/offloadingFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.inboundLogistics.offloading.OffloadingFragment"
+        android:label="fragment_offloading"
+        tools:layout="@layout/fragment_offloading" />
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.example.farmdatapod.logistics.inboundAndOutbound.inboundLogistics.loading.LoadingFragment"
+        android:label="fragment_loading"
+        tools:layout="@layout/fragment_loading" />
+
+</navigation>

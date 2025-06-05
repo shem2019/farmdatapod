@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Journey Header -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/journeyHeaderText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Journey Details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="?attr/colorPrimary"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Driver Information -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/driverTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/journeyHeaderText">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/driverText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Driver: "
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
+                android:textSize="16sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Journey Date and Time -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dateTimeTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/driverTextLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dateTimeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Date and Time: "
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
+                android:textSize="14sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Truck Information -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/truckTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateTimeTextLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/truckText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Truck: "
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
+                android:textSize="14sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Logistician Status -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/logisticianStatusTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/truckTextLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/logisticianStatusText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logistician Status: "
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
+                android:textSize="14sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Route ID -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/routeIdTextLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/logisticianStatusTextLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/routeIdText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Route ID: "
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:inputType="none"
+                android:textSize="14sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Stop Points Section Header -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/stopPointsHeaderText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Stop Points"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/routeIdTextLayout" />
+
+        <!-- Recycler View for Stop Points -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stopPointsRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stopPointsHeaderText"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

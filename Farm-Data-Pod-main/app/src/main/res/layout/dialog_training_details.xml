@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewCourseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Course Name"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textViewTrainerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trainer Name" />
+
+    <TextView
+        android:id="@+id/textViewBuyingCenter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buying Center" />
+
+    <TextView
+        android:id="@+id/textViewCourseDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Course Description" />
+
+    <TextView
+        android:id="@+id/textViewDateOfTraining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date of Training" />
+
+    <TextView
+        android:id="@+id/textViewContentOfTraining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Content of Training" />
+
+    <TextView
+        android:id="@+id/textViewVenue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Venue" />
+
+</LinearLayout>

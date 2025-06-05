@@ -1,0 +1,320 @@
+<resources>
+    <string name="app_name">FarmDataPod</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="FarmDataPod">TODO</string>
+    <string name="login_string">Login Form</string>
+    <string name="title_activity_dashboard">dashboard</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_input_finance">Input Finance</string>
+    <string name="menu_rural_worker">Rural Worker</string>
+    <string name="menu_processing">Processing</string>
+    <string name="menu_logistics">Logistics</string>
+    <string name="menu_receive_payments">Receive Payments</string>
+    <string name="menu_make_payments">Make Payments</string>
+    <string name="menu_selling">Selling</string>
+    <string name="menu_buying">Buying</string>
+    <string name="menu_price_distribution">Price Distribution</string>
+    <string name="menu_training">Training</string>
+    <string name="menu_extension_services">Extension Services</string>
+    <string name="menu_season_planning">Season Planning</string>
+    <string name="menu_producer">Producer</string>
+    <string name="menu_user_reg">User Registration</string>
+    <string name="menu_hub">Hub</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="hub">Hub</string>
+    <string name="producer">Producer</string>
+    <string name="season_planning">Season-Planning</string>
+    <string name="extension_services">Extension-Services</string>
+    <string name="buying">Buying</string>
+    <string name="selling">Selling</string>
+    <string name="get_started">Get started</string>
+    <string name="welcome_to_farmdatapod">Welcome to FarmDataPod</string>
+    <string name="other_name">Other Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="gender">Gender</string>
+    <string name="role">Role</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="id_number">ID Number</string>
+    <string name="add_key_contact">Add Key Contact</string>
+    <string name="key_contacts">Key Contacts</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="type_of_building">Type of Building</string>
+    <string name="input_center">Input Center</string>
+    <string name="facilities">Facilities</string>
+    <string name="floor_size">Floor Size</string>
+    <string name="ownership">Ownership</string>
+    <string name="year_established">Year Established</string>
+    <string name="address">Address</string>
+    <string name="hub_code">Hub Code</string>
+    <string name="hub_name">Hub Name</string>
+    <string name="region">Region</string>
+    <string name="submit_entered_values">Submit Values</string>
+    <string name="submit_data">Submit Hub Data</string>
+    <string name="log_out">Log out</string>
+    <string name="hub_registration">Hub Registration</string>
+    <string name="aggregation">Aggregation</string>
+    <string name="hub_registrations">Hub Registration</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="buying_center">Buying Center Registration Information</string>
+    <string name="cig_content">CIG</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="buying_center_registration_information">Buying Center Registration Information</string>
+    <string name="buying_center_hubs">Select hub for buying center registration</string>
+    <string name="enter_sub_county">Enter Sub County</string>
+    <string name="ward">Ward</string>
+    <string name="village">Village</string>
+    <string name="buying_center_name">Buying Center Name</string>
+    <string name="buying_center_code">Buying Center Code</string>
+    <string name="buying_center_address">Buying Center Address</string>
+    <string name="select_date_time">Select Year Established</string>
+    <string name="ownership_label">Select Ownership</string>
+    <string name="buying_center_floor_size">Floor Size</string>
+    <string name="facilities_label">Select Facilities</string>
+    <string name="facility_1">Refrigiration / Cooling</string>
+    <string name="facility_2">Hand Washing Facility</string>
+    <string name="facility_3">Produce Handling Unit</string>
+    <string name="facility_4">Washrooms</string>
+    <string name="facility_5">" Others"</string>
+    <string name="save">Save Buying Center Info</string>
+    <string name="input_center_label">Select Input Center(\'s)</string>
+    <string name="latitude_longitude"><![CDATA[Longitude & Latitude]]></string>
+    <string name="owned">Owned</string>
+    <string name="leased">Leased</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cig_registration_information">C.I.G Registration Information</string>
+    <string name="enter_cig_name">Enter C.I.G Name</string>
+    <string name="no_members">Enter No. Of Members</string>
+    <string name="input_elections_held">Elections Held</string>
+    <string name="input_constitution">Constitution</string>
+    <string name="input_registration">Registration</string>
+    <string name="select_last_election_date">Select Last Election Date</string>
+    <string name="enter_meeting_venue">Enter Meeting Venue</string>
+    <string name="upload_membership_register">Upload Membership Register</string>
+    <string name="choose_file">Choose File</string>
+    <string name="no_file_chosen">No file chosen</string>
+    <string name="schedule_meeting_day">Schedule meeting day</string>
+    <string name="schedule_meeting_time">Shedule Meeting Time</string>
+    <string name="upload_elections_held">Upload Election Minutes:</string>
+    <string name="upload_constitution">Upload constitution (image):</string>
+    <string name="upload_registration">Upload registration (image):</string>
+    <string name="latitude_135_228134_longitude_436_7350205">latitude: -135.228134, longitude: 436.7350205</string>
+    <string name="menu_producer_in_cig">Producer In CIG</string>
+    <string name="menu_independent_producer">Independent Producer</string>
+    <string name="field_registration">Field Registration</string>
+    <string name="bio_data">Bio Data</string>
+    <string name="independent_producer_bio_data">Independent Producer Bio Data</string>
+    <string name="submit_buying_center">Submit Buying Center</string>
+    <string name="buying_center_name_">Buying Center Name</string>
+    <string name="chairperson" />
+    <string name="enter_chairperson_name" />
+    <string name="enter_chairperson_phone" />
+    <string name="secretary" />
+    <string name="enter_secretary_name" />
+    <string name="enter_secretary_phone" />
+    <string-array name="region_array">
+        <item>Select County</item>
+        <item>Baringo</item>
+        <item>Bomet</item>
+        <item>Bungoma</item>
+        <item>Busia</item>
+        <item>Elgeyo Marakwet</item>
+        <item>Embu</item>
+        <item>Garissa</item>
+        <item>Homa Bay</item>
+        <item>Isiolo</item>
+        <item>Kajiado</item>
+        <item>Kakamega</item>
+        <item>Kericho</item>
+        <item>Kiambu</item>
+        <item>Kilifi</item>
+        <item>Kirinyaga</item>
+        <item>Kisii</item>
+        <item>Kisumu</item>
+        <item>Kitui</item>
+        <item>Kwale</item>
+        <item>Laikipia</item>
+        <item>Lamu</item>
+        <item>Machakos</item>
+        <item>Makueni</item>
+        <item>Mandera</item>
+        <item>Meru</item>
+        <item>Migori</item>
+        <item>Marsabit</item>
+        <item>Mombasa</item>
+        <item>Muranga</item>
+        <item>Nairobi</item>
+        <item>Nakuru</item>
+        <item>Nandi</item>
+        <item>Narok</item>
+        <item>Nyamira</item>
+        <item>Nyandarua</item>
+        <item>Nyeri</item>
+        <item>Samburu</item>
+        <item>Siaya</item>
+        <item>Taita Taveta</item>
+        <item>Tana River</item>
+        <item>Tharaka Nithi</item>
+        <item>Trans Nzoia</item>
+        <item>Turkana</item>
+        <item>Uasin Gishu</item>
+        <item>Vihiga</item>
+        <item>Wajir</item>
+        <item>West Pokot</item>
+    </string-array>
+    <string-array name="building_type_array">
+        <item>Permanent</item>
+        <item>Semi-Permanent</item>
+    </string-array>
+    <string-array name="knowledge_related_options">
+        <item>High</item>
+        <item>Moderate</item>
+        <item>Low</item>
+        <item>None</item>
+    </string-array>
+    <string-array name="farm_accessibility_options">
+        <item>tarmac road</item>
+        <item>all weather murram</item>
+        <item>dry weather road</item>
+        <item>inaccessible by road</item>
+    </string-array>
+    <string-array name="crop_list_options">
+        <item>crop a</item>
+        <item>crop b</item>
+        <item>crop c</item>
+    </string-array>
+    <string-array name="education_levels">
+        <item>primary education</item>
+        <item>highschool</item>
+        <item>diploma</item>
+        <item>bachelors degree</item>
+        <item>masters</item>
+    </string-array>
+    <string-array name="housing_types">
+        <item>permanent</item>
+        <item>semi permanent</item>
+        <item>temporary</item>
+    </string-array>
+    <string-array name="housing_floor_types">
+        <item>tiled</item>
+        <item>concrete</item>
+        <item>earthed</item>
+    </string-array>
+    <string-array name="housing_roof_types">
+        <item>grass</item>
+        <item>corrugated</item>
+        <item>tiled</item>
+    </string-array>
+    <string-array name="lighting_fuel_types">
+        <item>electricity</item>
+        <item>fuel</item>
+        <item>biogas</item>
+        <item>kerosene</item>
+        <item>none</item>
+    </string-array>
+    <string-array name="cooking_fuel_types">
+        <item>electricity</item>
+        <item>firewood</item>
+        <item>biogas</item>
+        <item>kerosene</item>
+        <item>charcoal</item>
+    </string-array>
+    <string-array name="harvesting_equipment_types">
+        <item>crate</item>
+        <item>bucket</item>
+        <item>bag</item>
+    </string-array>
+    <string-array name="transportation_types">
+        <item>donkey</item>
+        <item>bull</item>
+        <item>handcart</item>
+        <item>motovehicle</item>
+        <item>motor bike/bicycle</item>
+    </string-array>
+    <string-array name="toilet_floor_types">
+        <item>washable</item>
+        <item>non washable</item>
+    </string-array>
+    <string-array name="product_categories">
+        <item>Fruits</item>
+        <item>Vegetables</item>
+        <item>Cereals/Pulses</item>
+        <item>Plantation Crops</item>
+        <item>Fodder Crops</item>
+        <item>Meat</item>
+        <item>Poultry</item>
+        <item>Eggs</item>
+        <item>Honey</item>
+        <item>Rabbit</item>
+        <item>Dairy</item>
+        <item>Fish</item>
+        <item>Nuts/Oil Crops</item>
+    </string-array>
+
+</resources>
