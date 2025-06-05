@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.os.AsyncTask
 import android.util.Log
-import androidx.room.util.copy
 import com.example.farmdatapod.Attendance
 import com.example.farmdatapod.BuyingCenter
 import com.example.farmdatapod.BuyingCustomer
@@ -16,12 +15,7 @@ import com.example.farmdatapod.CIG
 import com.example.farmdatapod.CustomUser
 import com.example.farmdatapod.CustomerPriceDistribution
 import com.example.farmdatapod.DBHandler
-import com.example.farmdatapod.ExtScoutingStation
-import com.example.farmdatapod.ExtensionService
-import com.example.farmdatapod.FarmerFieldRegistration
 import com.example.farmdatapod.FarmerPriceDistribution
-import com.example.farmdatapod.FertilizerUsed
-import com.example.farmdatapod.ForecastYield
 import com.example.farmdatapod.HQUser
 import com.example.farmdatapod.Hub
 import com.example.farmdatapod.HubUser
@@ -29,40 +23,24 @@ import com.example.farmdatapod.IndividualCustomer
 import com.example.farmdatapod.IndividualLogistician
 import com.example.farmdatapod.KeyContact
 import com.example.farmdatapod.Loading
-import com.example.farmdatapod.MarketProduce
 import com.example.farmdatapod.Member
 import com.example.farmdatapod.Offloading
 import com.example.farmdatapod.OrganisationalCustomer
 import com.example.farmdatapod.OrganisationalLogistician
 import com.example.farmdatapod.PaymentCustomer
 import com.example.farmdatapod.PaymentFarmer
-import com.example.farmdatapod.PesticideUsed
-import com.example.farmdatapod.PlanIrrigation
-import com.example.farmdatapod.PlanJourney
-import com.example.farmdatapod.PlanNutrition
-import com.example.farmdatapod.PreventativeDisease
-import com.example.farmdatapod.PreventativePest
 import com.example.farmdatapod.ProcessingUser
-import com.example.farmdatapod.ProducerBiodata
 import com.example.farmdatapod.Quarantine
 import com.example.farmdatapod.RuralWorker
-import com.example.farmdatapod.SeasonPlanning
 import com.example.farmdatapod.Training
 import com.example.farmdatapod.network.ApiService
 import com.example.farmdatapod.utils.SharedPrefs
-import com.example.farmdatapod.dbmodels.BuyingCenterResponse
-import com.example.farmdatapod.dbmodels.HubResponse
-import com.example.farmdatapod.dbmodels.PlanJourneyResponse
-import com.example.farmdatapod.dbmodels.ScoutingStation
 import com.example.farmdatapod.dbmodels.UserResponse
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import okhttp3.ResponseBody
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -114,9 +92,6 @@ class DataSyncManager(
 
         // Proceed with fetching and syncing other data
         fetchAndSyncUserData()
-//        fetchAndSyncHubData()
-//        fetchAndSyncBuyingCenterData()
-//        fetchAndSyncCigData()
         fetchAndSyncCustomUserData()
         fetchAndSyncHQUserData()
         fetchAndSyncHubUserData()
@@ -125,17 +100,12 @@ class DataSyncManager(
         fetchAndSyncOrganisationLogisticianData()
         fetchAndSyncCustomerData()
         fetchAndSyncOrganizationalCustomerData()
-//        fetchAndSyncProducerBiodataData()
-//        fetchAndSyncCIGProducerBiodataData()
-//        fetchAndSyncFieldRegistrationData()
-//        fetchAndSyncCIGFieldRegistrationData()
-//        fetchAndSyncSeasonPlanningData()
-//        fetchAndSyncExtensionServiceData()
+
         fetchAndSyncTrainingData()
         fetchAndSyncAttendanceData()
         fetchAndSyncFarmerPriceDistributionData()
         fetchAndSyncCustomerPriceDistributionData()
-//        fetchAndSyncBuyingData()
+
         fetchAndSyncSellingData()
         fetchAndSyncQuarantineData()
         fetchAndSyncPaymentData()
@@ -815,15 +785,6 @@ class DataSyncManager(
         return orgLogisticianJson
     }
 
-    // Post offline producer biodata data
-
-
-    // Post offline producer biodata data
-
-
-    //Post season planning offline data
-
-    // Post training offline data
     private fun postTrainingData() {
         // Retrieve offline training data from DBHandler
         val offlineTrainings = dbHandler.offlineTrainings
@@ -1193,11 +1154,6 @@ class DataSyncManager(
         }
     }
 
-    // Post plan journey offline data
-
-
-
-
     // Post loading offline data
     private fun postLoadingData() {
         // Retrieve offline loading data from DBHandler
@@ -1336,7 +1292,6 @@ class DataSyncManager(
         }
     }
 
-
     // Post rural worker offline data
     private fun postRuralWorkerData() {
         // Retrieve offline rural worker data from DBHandler
@@ -1413,9 +1368,6 @@ class DataSyncManager(
             put("user_id", ruralWorker.user_id)
         }
     }
-
-
-
     // Syncing online data
     private fun fetchAndSyncUserData() {
         val authToken = sharedPrefs.getToken()
@@ -1443,37 +1395,6 @@ class DataSyncManager(
             }
         })
     }
-
-
-
-//    private fun fetchAndSyncCigData() {
-//        val authToken = sharedPrefs.getToken()
-//
-//        apiService.getCigs(authToken)?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        try {
-//                            // Parse the response body to List<CIG>
-//                            val cigsList = parseCigResponse(responseBody)
-//                            // Sync CIGs to the local database
-//                            syncCigsToLocalDatabase(cigsList)
-//                        } catch (e: Exception) {
-//                            Log.e("DataSyncManager", "Error parsing CIG response", e)
-//                        }
-//                    } ?: run {
-//                        Log.w("DataSyncManager", "Response body is null")
-//                    }
-//                } else {
-//                    Log.e("DataSyncManager", "Response was not successful: ${response.errorBody()?.string()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-//                Log.e("DataSyncManager", "Network request failed", t)
-//            }
-//        })
-//    }
 
     private fun fetchAndSyncCustomUserData() {
         val authToken = sharedPrefs.getToken()
@@ -1691,8 +1612,6 @@ class DataSyncManager(
         })
     }
 
-
-
     fun fetchAndSyncTrainingData() {
         val authToken = sharedPrefs.getToken()
 
@@ -1800,34 +1719,6 @@ class DataSyncManager(
             }
         })
     }
-
-//    private fun fetchAndSyncBuyingData() {
-//        val authToken = sharedPrefs.getToken()
-//
-//        apiService.getBuying(authToken)?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        try {
-//                            val responseString = responseBody.string() // Convert response body to string
-//                            val buyingList = parseBuyingResponse(responseString)
-//                            syncBuyingToLocalDatabase(buyingList)
-//                        } catch (e: Exception) {
-//                            Log.e("DataSyncManager", "Error parsing Buying response", e)
-//                        }
-//                    } ?: run {
-//                        Log.w("DataSyncManager", "Response body is null")
-//                    }
-//                } else {
-//                    Log.e("DataSyncManager", "Response was not successful: ${response.errorBody()?.string()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-//                Log.e("DataSyncManager", "Network request failed", t)
-//            }
-//        })
-//    }
 
     private fun fetchAndSyncSellingData() {
         val authToken = sharedPrefs.getToken()
@@ -1938,87 +1829,6 @@ class DataSyncManager(
         })
     }
 
-//    private fun fetchAndSyncPlanJourneyData() {
-//        val authToken = sharedPrefs.getToken()
-//
-//        apiService.getPlanJourney(authToken)?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        try {
-//                            val planJourneyResponse = parsePlanJourneyResponse(responseBody)
-//                            syncPlanJourneysToLocalDatabase(planJourneyResponse)
-//                        } catch (e: Exception) {
-//                            Log.e("DataSyncManager", "Error parsing plan journey response", e)
-//                        }
-//                    } ?: run {
-//                        Log.w("DataSyncManager", "Response body is null")
-//                    }
-//                } else {
-//                    Log.e("DataSyncManager", "Response was not successful: ${response.errorBody()?.string()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-//                Log.e("DataSyncManager", "Network request failed", t)
-//            }
-//        })
-//    }
-//
-//    private fun fetchAndSyncLoadingData() {
-//        val authToken = sharedPrefs.getToken()
-//
-//        apiService.getLoading(authToken)?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        try {
-//                            val loadingList = parseLoadingResponse(responseBody)
-//                            syncLoadingToLocalDatabase(loadingList)
-//                        } catch (e: Exception) {
-//                            Log.e("DataSyncManager", "Error parsing Loading response", e)
-//                        }
-//                    } ?: run {
-//                        Log.w("DataSyncManager", "Response body is null")
-//                    }
-//                } else {
-//                    Log.e("DataSyncManager", "Response was not successful: ${response.errorBody()?.string()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-//                Log.e("DataSyncManager", "Network request failed", t)
-//            }
-//        })
-//    }
-//
-//    private fun fetchAndSyncOffLoadingData() {
-//        val authToken = sharedPrefs.getToken()
-//
-//        apiService.getOffoading(authToken)?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-//                if (response.isSuccessful) {
-//                    response.body()?.let { responseBody ->
-//                        try {
-//                            val offloadingList = parseOffloadingResponse(responseBody)
-//                            syncOffloadingToLocalDatabase(offloadingList)
-//                        } catch (e: Exception) {
-//                            Log.e("DataSyncManager", "Error parsing Loading response", e)
-//                        }
-//                    } ?: run {
-//                        Log.w("DataSyncManager", "Response body is null")
-//                    }
-//                } else {
-//                    Log.e("DataSyncManager", "Response was not successful: ${response.errorBody()?.string()}")
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-//                Log.e("DataSyncManager", "Network request failed", t)
-//            }
-//        })
-//    }
-
     private fun fetchAndSyncRuralWorkerData() {
         val authToken = sharedPrefs.getToken()
 
@@ -2046,565 +1856,422 @@ class DataSyncManager(
         })
     }
 
+    // DataSyncManager.kt
 
+// ... (other parts of your DataSyncManager class)
 
-    private fun parseUserResponse(responseBody: ResponseBody): UserResponse {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "User Response JSON: $jsonString")
-        return Gson().fromJson(jsonString, UserResponse::class.java)
-    }
-
-    private fun parseHubResponse(responseBody: ResponseBody): HubResponse {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Hub Response JSON: $jsonString")
-        return Gson().fromJson(jsonString, HubResponse::class.java)
-    }
-
-    private fun parseBuyingCenterResponse(responseBody: ResponseBody): BuyingCenterResponse {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Buying Center Response JSON: $jsonString")
-        return Gson().fromJson(jsonString, BuyingCenterResponse::class.java)
-    }
-
-    private fun parseCigResponse(responseBody: ResponseBody): List<CIG> {
-        val gson = Gson()
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "CIG Response JSON: $jsonString")
-
-        val type = object : TypeToken<List<CIG>>() {}.type
-        return gson.fromJson(jsonString, type)
+    private fun parseUserResponse(responseBody: ResponseBody): UserResponse? {
+        val TAG = "DataSyncManager:UserParse"
+        Log.d(TAG, "Attempting to parse User response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "User Response JSON: $jsonString")
+            val userResponse = Gson().fromJson(jsonString, UserResponse::class.java)
+            Log.d(TAG, "Successfully parsed User response.")
+            return userResponse
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing User response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return null
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading User response body.", e)
+            return null
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing User response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return null
+        }
     }
 
     private fun parseCustomUserResponse(responseBody: ResponseBody): List<CustomUser> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Custom User Response JSON: $jsonString")
-        val type = object : TypeToken<List<CustomUser>>() {}.type
-        return Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:CustomUserParse"
+        Log.d(TAG, "Attempting to parse Custom User response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Custom User Response JSON: $jsonString")
+            val type = object : TypeToken<List<CustomUser>>() {}.type
+            val customUsers = Gson().fromJson<List<CustomUser>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Custom User response. Items: ${customUsers.size}")
+            return customUsers
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing Custom User response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Custom User response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Custom User response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        }
     }
 
     private fun parseHQUserResponse(responseBody: ResponseBody): List<HQUser> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "HQ User Response JSON: $jsonString")
-        val type = object : TypeToken<List<HQUser>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:HQUserParse"
+        Log.d(TAG, "Attempting to parse HQ User response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "HQ User Response JSON: $jsonString")
+            val type = object : TypeToken<List<HQUser>>() {}.type
+            val hqUsers = Gson().fromJson<List<HQUser>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed HQ User response. Items: ${hqUsers.size}")
+            return hqUsers
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing HQ User response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading HQ User response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing HQ User response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseHubUserResponse(responseBody: ResponseBody): List<HubUser> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Hub User Response JSON: $jsonString")
-        val type = object : TypeToken<List<HubUser>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:HubUserParse"
+        Log.d(TAG, "Attempting to parse Hub User response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Hub User Response JSON: $jsonString")
+            val type = object : TypeToken<List<HubUser>>() {}.type
+            val hubUsers = Gson().fromJson<List<HubUser>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Hub User response. Items: ${hubUsers.size}")
+            return hubUsers
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing Hub User response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Hub User response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Hub User response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseProcessingUserResponse(responseBody: ResponseBody): List<ProcessingUser> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "ProcessingUser Response JSON: $jsonString")
-        val type = object : TypeToken<List<ProcessingUser>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:ProcessingUserParse"
+        Log.d(TAG, "Attempting to parse ProcessingUser response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "ProcessingUser Response JSON: $jsonString")
+            val type = object : TypeToken<List<ProcessingUser>>() {}.type
+            val processingUsers = Gson().fromJson<List<ProcessingUser>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed ProcessingUser response. Items: ${processingUsers.size}")
+            return processingUsers
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing ProcessingUser response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading ProcessingUser response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing ProcessingUser response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseLogisticianResponse(responseBody: ResponseBody): List<IndividualLogistician> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Logistician Response JSON: $jsonString")
-        val type = object : TypeToken<List<IndividualLogistician>>() {}.type
-        return Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:IndLogisticianParse"
+        Log.d(TAG, "Attempting to parse Individual Logistician response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Individual Logistician Response JSON: $jsonString")
+            val type = object : TypeToken<List<IndividualLogistician>>() {}.type
+            val logisticians = Gson().fromJson<List<IndividualLogistician>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Individual Logistician response. Items: ${logisticians.size}")
+            return logisticians
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing Individual Logistician response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Individual Logistician response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Individual Logistician response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        }
     }
 
     private fun parseOrganisationalLogisticianResponse(responseBody: ResponseBody): List<OrganisationalLogistician> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Organisational Logistician Response JSON: $jsonString")
-        val type = object : TypeToken<List<OrganisationalLogistician>>() {}.type
-        return Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:OrgLogisticianParse"
+        Log.d(TAG, "Attempting to parse Organisational Logistician response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Organisational Logistician Response JSON: $jsonString")
+            val type = object : TypeToken<List<OrganisationalLogistician>>() {}.type
+            val orgLogisticians = Gson().fromJson<List<OrganisationalLogistician>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Organisational Logistician response. Items: ${orgLogisticians.size}")
+            return orgLogisticians
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing Organisational Logistician response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Organisational Logistician response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Organisational Logistician response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        }
     }
 
     private fun parseCustomerResponse(responseBody: ResponseBody): List<IndividualCustomer> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Customer Response JSON: $jsonString")
-        val type = object : TypeToken<List<IndividualCustomer>>() {}.type
-        return Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:IndCustomerParse"
+        Log.d(TAG, "Attempting to parse Individual Customer response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Individual Customer Response JSON: $jsonString")
+            val type = object : TypeToken<List<IndividualCustomer>>() {}.type
+            val customers = Gson().fromJson<List<IndividualCustomer>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Individual Customer response. Items: ${customers.size}")
+            return customers
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing Individual Customer response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Individual Customer response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Individual Customer response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        }
     }
 
     private fun parseOrganizationalCustomerResponse(responseBody: ResponseBody): List<OrganisationalCustomer> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Organizational Customer Response JSON: $jsonString")
-        val type = object : TypeToken<List<OrganisationalCustomer>>() {}.type
-        return Gson().fromJson(jsonString, type)
-    }
-
-    private fun parseProducerBiodataResponse(responseBody: String): List<ProducerBiodata> {
-        val gson = Gson()
-        return try {
-            val producerBiodataListType = object : TypeToken<List<ProducerBiodata>>() {}.type
-            gson.fromJson(responseBody, producerBiodataListType)
+        val TAG = "DataSyncManager:OrgCustomerParse"
+        Log.d(TAG, "Attempting to parse Organizational Customer response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d("DataSyncManager on parseOrganizationalCustomerResponse", "Organizational Customer Response JSON: $jsonString")
+            val type = object : TypeToken<List<OrganisationalCustomer>>() {}.type
+            val customers = Gson().fromJson<List<OrganisationalCustomer>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Organizational Customer response. Items: ${customers.size}")
+            return customers
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "Error parsing producer biodata response", e)
-            emptyList() // Return an empty list in case of an error
-        }
-    }
-
-    private fun parseCIGProducerBiodataResponse(responseBody: String): List<ProducerBiodata> {
-        val gson = Gson()
-        return try {
-            val producerBiodataListType = object : TypeToken<List<ProducerBiodata>>() {}.type
-            gson.fromJson(responseBody, producerBiodataListType)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "Error parsing cig producer biodata response", e)
-            emptyList()
-        }
-    }
-
-    private fun parseFieldRegistrationResponse(responseBody: ResponseBody): List<FarmerFieldRegistration> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Field Registration Response JSON: $jsonString")
-        val type = object : TypeToken<List<FarmerFieldRegistration>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-    private fun parseCIGFieldRegistrationResponse(responseBody: ResponseBody): List<FarmerFieldRegistration> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "CIG Field Registration Response JSON: $jsonString")
-        val type = object : TypeToken<List<FarmerFieldRegistration>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-    private fun parseSeasonPlanningResponse(responseBody: ResponseBody): List<SeasonPlanning> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Season Planning Response JSON: $jsonString")
-
-        val gson = Gson()
-        val type = object : TypeToken<List<JsonObject>>() {}.type
-
-        return try {
-            val jsonObjects: List<JsonObject> = gson.fromJson(jsonString, type)
-            jsonObjects.map { jsonObject ->
-                val id = jsonObject.get("id").asInt
-                val producer = jsonObject.get("producer").asString
-                val field = jsonObject.get("field").asString
-                val plannedDateOfPlanting = jsonObject.get("planned_date_of_planting").asString
-                val weekNumber = jsonObject.get("week_number").asInt
-                val userId = jsonObject.get("user_id").asString
-
-                // Safely extract dynamic activities with type checking
-                val nursery = jsonObject.get("nursery")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val gapping = jsonObject.get("gapping")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val soilAnalysis = jsonObject.get("soil_analysis")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val liming = jsonObject.get("liming")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val transplanting = jsonObject.get("transplanting")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val weeding = jsonObject.get("weeding")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val prunningThinningDesuckering = jsonObject.get("prunning_thinning_desuckering")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val mulching = jsonObject.get("mulching")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val harvesting = jsonObject.get("harvesting")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-
-                // Parse lists with null and type safety checks
-                val planNutritions = jsonObject.get("plan_nutritions")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<PlanNutrition>::class.java).toList()
-                } ?: emptyList()
-
-                val preventativeDiseases = jsonObject.get("preventative_diseases")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<PreventativeDisease>::class.java).toList()
-                } ?: emptyList()
-
-                val preventativePests = jsonObject.get("preventative_pests")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<PreventativePest>::class.java).toList()
-                } ?: emptyList()
-
-                val planIrrigations = jsonObject.get("plan_irrigations")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<PlanIrrigation>::class.java).toList()
-                } ?: emptyList()
-
-                val scoutingStations = jsonObject.get("scouting_stations")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<ScoutingStation>::class.java).toList()
-                } ?: emptyList()
-
-                val marketProduces = jsonObject.get("marketProduces")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<MarketProduce>::class.java).toList()
-                } ?: emptyList()
-
-                // Create SeasonPlanning object
-                SeasonPlanning(
-                    id = id,
-                    producer = producer,
-                    fieldName = field,
-                    planned_date_of_planting = plannedDateOfPlanting,
-                    week_number = weekNumber,
-                    nursery = nursery,
-                    gapping = gapping,
-                    soil_analysis = soilAnalysis,
-                    liming = liming,
-                    transplanting = transplanting,
-                    weeding = weeding,
-                    prunning_thinning_desuckering = prunningThinningDesuckering,
-                    mulching = mulching,
-                    harvesting = harvesting,
-                    plan_nutritions = planNutritions,
-                    preventative_diseases = preventativeDiseases,
-                    preventative_pests = preventativePests,
-                    plan_irrigations = planIrrigations,
-                    scouting_stations = scoutingStations,
-                    marketProduces = marketProduces,
-                    user_id = userId
-                )
-            }
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        } catch (e: ClassCastException) {
-            Log.e("DataSyncManager", "Class Cast Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-
-    // Extension function to safely get an integer value or return null if it's not an integer
-    private fun JsonObject.getAsIntOrNull(memberName: String): Int? {
-        return if (this.has(memberName) && this.get(memberName).isJsonPrimitive && this.get(memberName).asJsonPrimitive.isNumber) {
-            this.get(memberName).asInt
-        } else {
-            null
-        }
-    }
-
-    // Extension function to safely get a string value or return null if it's not a string
-    private fun JsonObject.getAsStringOrNull(memberName: String): String? {
-        return if (this.has(memberName) && this.get(memberName).isJsonPrimitive && this.get(memberName).asJsonPrimitive.isString) {
-            this.get(memberName).asString
-        } else {
-            null
-        }
-    }
-
-    // Extension function to safely get a JsonObject or return null if it's not an object
-    private fun JsonObject.getAsJsonObjectOrNull(memberName: String): JsonObject? {
-        return if (this.has(memberName) && this.get(memberName).isJsonObject) {
-            this.getAsJsonObject(memberName)
-        } else {
-            null
-        }
-    }
-
-
-    private fun parseExtensionServiceResponse(responseBody: ResponseBody): List<ExtensionService> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Extension Services Response JSON: $jsonString")
-
-        val gson = Gson()
-        val type = object : TypeToken<List<JsonObject>>() {}.type
-
-        return try {
-            val jsonObjects: List<JsonObject> = gson.fromJson(jsonString, type)
-            jsonObjects.map { jsonObject ->
-                val id = jsonObject.get("id")?.asInt ?: 0
-                val producer = jsonObject.get("producer")?.asString ?: ""
-                val field = jsonObject.get("field")?.asString ?: ""
-                val plannedDateOfPlanting = jsonObject.get("planned_date_of_planting")?.asString ?: ""
-                val weekNumber = jsonObject.get("week_number")?.asInt ?: 0
-                val userId = jsonObject.get("user_id")?.asString ?: ""
-
-                // Safely extract dynamic activities with type checking
-                val nursery = jsonObject.get("nursery")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val gapping = jsonObject.get("gapping")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val soilAnalysis = jsonObject.get("soil_analysis")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val liming = jsonObject.get("liming")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val transplanting = jsonObject.get("transplanting")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val weeding = jsonObject.get("weeding")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val prunningThinningDesuckering = jsonObject.get("prunning_thinning_desuckering")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val mulching = jsonObject.get("mulching")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-                val harvesting = jsonObject.get("harvesting")?.takeIf { it.isJsonObject }?.asJsonObject ?: JsonObject()
-
-                // Parse lists with null and type safety checks
-                val extScoutingStations = jsonObject.get("ext_scouting_stations")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<ExtScoutingStation>::class.java).toList().map { station ->
-                        station.apply {
-                            extension_service_registration_id = id
-                        }
-                    }
-                } ?: emptyList()
-
-                val pesticidesUsed = jsonObject.get("pesticides_used")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<PesticideUsed>::class.java).toList().map { pesticide ->
-                        pesticide.apply {
-                            extension_service_registration_id = id
-                        }
-                    }
-                } ?: emptyList()
-
-                val fertilizersUsed = jsonObject.get("fertilizers_used")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<FertilizerUsed>::class.java).toList().map { fertilizer ->
-                        fertilizer.apply {
-                            extension_service_registration_id = id
-                        }
-                    }
-                } ?: emptyList()
-
-                val forecastYields = jsonObject.get("forecast_yields")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<ForecastYield>::class.java).toList().map { forecast ->
-                        forecast.apply {
-                            extension_service_registration_id = id
-                        }
-                    }
-                } ?: emptyList()
-
-                val marketProduces = jsonObject.get("marketProduces")?.takeIf { it.isJsonArray }?.let {
-                    gson.fromJson(it, Array<MarketProduce>::class.java).toList().map { marketProduce ->
-                        marketProduce.apply {
-                            extension_service_id = id
-                        }
-                    }
-                } ?: emptyList()
-
-                // Create ExtensionService object
-                ExtensionService(
-                    id = id,
-                    producer = producer,
-                    fieldName = field,
-                    planned_date_of_planting = plannedDateOfPlanting,
-                    week_number = weekNumber,
-                    nursery = nursery,
-                    gapping = gapping,
-                    soil_analysis = soilAnalysis,
-                    liming = liming,
-                    transplanting = transplanting,
-                    weeding = weeding,
-                    prunning_thinning_desuckering = prunningThinningDesuckering,
-                    mulching = mulching,
-                    harvesting = harvesting,
-                    ext_scouting_stations = extScoutingStations,
-                    pesticides_used = pesticidesUsed,
-                    fertlizers_used = fertilizersUsed,
-                    forecast_yields = forecastYields,
-                    marketProduces = marketProduces,
-                    user_id = userId
-                )
-            }
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        } catch (e: ClassCastException) {
-            Log.e("DataSyncManager", "Class Cast Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-    private fun parseIntField(jsonObject: JsonObject, fieldName: String): Int {
-        return try {
-            val fieldValue = jsonObject.get(fieldName)?.takeIf { it.isJsonPrimitive }?.asString
-            if (fieldValue.isNullOrBlank()) {
-                0 // or any default value
-            } else {
-                fieldValue.toIntOrNull() ?: 0
-            }
-        } catch (e: NumberFormatException) {
-            Log.e("DataSyncManager", "Error parsing integer field: $fieldName", e)
-            0
-        }
-    }
-
-    private fun <T> parseJsonArray(jsonObject: JsonObject, fieldName: String, clazz: Class<T>): List<T> {
-        val jsonArray = jsonObject.getAsJsonArray(fieldName) ?: JsonArray()
-        return try {
-            val type = TypeToken.getParameterized(List::class.java, clazz).type
-            // Filter out empty strings if necessary before parsing
-            val filteredJsonArray = JsonArray()
-            jsonArray.forEach {
-                if (it.isJsonObject && it.asJsonObject.entrySet().isNotEmpty()) {
-                    filteredJsonArray.add(it)
-                }
-            }
-            Gson().fromJson<List<T>>(filteredJsonArray, type)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "Error parsing JSON array field: $fieldName", e)
-            emptyList()
+            Log.e(TAG, "Error parsing Organizational Customer response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Organizational Customer response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Organizational Customer response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseTrainingResponse(responseBody: ResponseBody): List<Training> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Training Response JSON: $jsonString")
-        val type = object : TypeToken<List<Training>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:TrainingParse"
+        Log.d(TAG, "Attempting to parse Training response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Training Response JSON: $jsonString")
+            val type = object : TypeToken<List<Training>>() {}.type
+            val trainings = Gson().fromJson<List<Training>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Training response. Items: ${trainings.size}")
+            return trainings
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e("DataSyncManager on parseTrainingRespons ", "JSON Parsing Error on parseTrainingRespons. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Training response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Training response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseAttendanceResponse(responseBody: ResponseBody): List<Attendance> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Attendance Response JSON: $jsonString")
-        val type = object : TypeToken<List<Attendance>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:AttendanceParse"
+        Log.d(TAG, "Attempting to parse Attendance response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Attendance Response JSON: $jsonString")
+            val type = object : TypeToken<List<Attendance>>() {}.type
+            val attendances = Gson().fromJson<List<Attendance>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Attendance response. Items: ${attendances.size}")
+            return attendances
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e("DataSyncManager on parseAttendanceResponse", "JSON Parsing Error. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Attendance response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Attendance response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseFarmerPriceDistributionResponse(responseBody: ResponseBody): List<FarmerPriceDistribution> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Farmer Price Distribution Response JSON: $jsonString")
-        val type = object : TypeToken<List<FarmerPriceDistribution>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:FarmerPriceParse"
+        Log.d(TAG, "Attempting to parse Farmer Price Distribution response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Farmer Price Distribution Response JSON: $jsonString")
+            val type = object : TypeToken<List<FarmerPriceDistribution>>() {}.type
+            val distributions = Gson().fromJson<List<FarmerPriceDistribution>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Farmer Price Distribution response. Items: ${distributions.size}")
+            return distributions
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e("DataSyncManager on parseFarmerPriceDistributionResponse", "JSON Parsing Error. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Farmer Price Distribution response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Farmer Price Distribution response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseCustomerPriceDistributionResponse(responseBody: ResponseBody): List<CustomerPriceDistribution> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Customer Price Distribution Response JSON: $jsonString")
-        val type = object : TypeToken<List<CustomerPriceDistribution>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:CustPriceParse"
+        Log.d(TAG, "Attempting to parse Customer Price Distribution response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d("DataSyncManager on parseCustomerPriceDistributionResponse", "Customer Price Distribution Response JSON: $jsonString")
+            val type = object : TypeToken<List<CustomerPriceDistribution>>() {}.type
+            val distributions = Gson().fromJson<List<CustomerPriceDistribution>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Customer Price Distribution response. Items: ${distributions.size}")
+            return distributions
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing Customer Price Distribution response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Customer Price Distribution response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Customer Price Distribution response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
-    private fun parseBuyingResponse(responseString: String): List<BuyingFarmer> {
-        val gson = Gson()
-        val buyingListType = object : TypeToken<List<BuyingFarmer>>() {}.type
-        return gson.fromJson(responseString, buyingListType)
-    }
-
     private fun parseSellingResponse(responseString: String): List<BuyingCustomer> {
+        val TAG = "DataSyncManager:SellingParse"
+        Log.d(TAG, "Attempting to parse Selling (BuyingCustomer) response.")
+        Log.d(TAG, "Selling (BuyingCustomer) Response JSON: $responseString")
         val gson = Gson()
         val sellingListType = object : TypeToken<List<BuyingCustomer>>() {}.type
-        return gson.fromJson(responseString, sellingListType)
+        return try {
+            val sellingList = gson.fromJson<List<BuyingCustomer>>(responseString, sellingListType)
+            Log.d(TAG, "Successfully parsed Selling (BuyingCustomer) response. Items: ${sellingList.size}")
+            sellingList
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Error parsing Selling (BuyingCustomer) response JSON: $responseString", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Selling (BuyingCustomer) response: $responseString", e)
+            return emptyList()
+        }
     }
 
     private fun parseQuarantineResponse(responseBody: ResponseBody): List<Quarantine> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Quarantine Response JSON: $jsonString")
-        val type = object : TypeToken<List<Quarantine>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:QuarantineParse"
+        Log.d(TAG, "Attempting to parse Quarantine response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Quarantine Response JSON: $jsonString")
+            val type = object : TypeToken<List<Quarantine>>() {}.type
+            val quarantines = Gson().fromJson<List<Quarantine>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Quarantine response. Items: ${quarantines.size}")
+            return quarantines
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing Quarantine response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Quarantine response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Quarantine response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parsePaymentResponse(responseBody: ResponseBody): List<PaymentFarmer> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Payment Response JSON: $jsonString")
-        val type = object : TypeToken<List<PaymentFarmer>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:PaymentFarmerParse"
+        Log.d(TAG, "Attempting to parse PaymentFarmer response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "PaymentFarmer Response JSON: $jsonString")
+            val type = object : TypeToken<List<PaymentFarmer>>() {}.type
+            val payments = Gson().fromJson<List<PaymentFarmer>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed PaymentFarmer response. Items: ${payments.size}")
+            return payments
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing PaymentFarmer response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading PaymentFarmer response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing PaymentFarmer response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseReceivePaymentResponse(responseBody: ResponseBody): List<PaymentCustomer> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Payment Response JSON: $jsonString")
-        val type = object : TypeToken<List<PaymentCustomer>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:PaymentCustParse"
+        Log.d(TAG, "Attempting to parse PaymentCustomer response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "PaymentCustomer Response JSON: $jsonString")
+            val type = object : TypeToken<List<PaymentCustomer>>() {}.type
+            val payments = Gson().fromJson<List<PaymentCustomer>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed PaymentCustomer response. Items: ${payments.size}")
+            return payments
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-    private fun parsePlanJourneyResponse(responseBody: ResponseBody): PlanJourneyResponse {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Plan Journey Response JSON: $jsonString")
-        return Gson().fromJson(jsonString, PlanJourneyResponse::class.java)
-    }
-
-    private fun parseLoadingResponse(responseBody: ResponseBody): List<Loading> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Loading Response JSON: $jsonString")
-
-        // Convert the JSON string to a JSONObject
-        val jsonObject = try {
-            JSONObject(jsonString)
-        } catch (e: JSONException) {
-            Log.e("DataSyncManager", "Error converting JSON string to JSONObject", e)
+            Log.e(TAG, "Error parsing PaymentCustomer response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
             return emptyList()
-        }
-
-        // Extract the JSONArray from the "loadings" key
-        val loadingsJsonArray = jsonObject.optJSONArray("loadings") ?: return emptyList()
-
-        // Convert JSONArray to List<Loading>
-        val type = object : TypeToken<List<Loading>>() {}.type
-        return try {
-            Gson().fromJson(loadingsJsonArray.toString(), type)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
-        }
-    }
-
-    private fun parseOffloadingResponse(responseBody: ResponseBody): List<Offloading> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Offloading Response JSON: $jsonString")
-
-        // Convert the JSON string to a JSONArray
-        val jsonArray = try {
-            JSONArray(jsonString)
-        } catch (e: JSONException) {
-            Log.e("DataSyncManager", "Error converting JSON string to JSONArray", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading PaymentCustomer response body.", e)
             return emptyList()
-        }
-
-        // Convert JSONArray to List<Offloading>
-        val type = object : TypeToken<List<Offloading>>() {}.type
-        return try {
-            Gson().fromJson(jsonArray.toString(), type)
-        } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing PaymentCustomer response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
     private fun parseRuralWorkerResponse(responseBody: ResponseBody): List<RuralWorker> {
-        val jsonString = responseBody.string()
-        Log.d("DataSyncManager", "Rural Worker Response JSON: $jsonString")
-        val type = object : TypeToken<List<RuralWorker>>() {}.type
-        return try {
-            Gson().fromJson(jsonString, type)
+        val TAG = "DataSyncManager:RuralWorkerParse"
+        Log.d(TAG, "Attempting to parse Rural Worker response.")
+        var jsonString: String? = null
+        try {
+            jsonString = responseBody.string()
+            Log.d(TAG, "Rural Worker Response JSON: $jsonString")
+            val type = object : TypeToken<List<RuralWorker>>() {}.type
+            val ruralWorkers = Gson().fromJson<List<RuralWorker>>(jsonString, type)
+            Log.d(TAG, "Successfully parsed Rural Worker response. Items: ${ruralWorkers.size}")
+            return ruralWorkers
         } catch (e: JsonSyntaxException) {
-            Log.e("DataSyncManager", "JSON Parsing Error", e)
-            emptyList() // Return an empty list in case of error
+            Log.e(TAG, "Error parsing Rural Worker response JSON. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException while reading Rural Worker response body.", e)
+            return emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Unexpected error parsing Rural Worker response. Data: ${jsonString ?: "Error: JSON string was null or unreadable"}", e)
+            return emptyList()
         }
     }
 
-    private fun syncUsersToLocalDatabase(userResponse: UserResponse) {
-        val users = userResponse.users
+
+    private fun syncUsersToLocalDatabase(userResponse: UserResponse?) {
+        val users = userResponse!!.users
         if (users.isNotEmpty()) {
             Log.d("DataSyncManager", "Syncing ${users.size} users to local database.")
 
@@ -2655,208 +2322,6 @@ class DataSyncManager(
         val exists = cursor.count > 0
         cursor.close()
         return exists
-    }
-
-    private fun syncHubsToLocalDatabase(hubResponse: HubResponse) {
-        val hubs = hubResponse.forms
-        if (hubs.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${hubs.size} hubs to local database.")
-
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                hubs.forEach { hub ->
-                    // Insert hub details into hubs table
-                    val hubValues = ContentValues().apply {
-                        put(DBHandler.HUB_ID_COL, hub.id)
-                        put(DBHandler.regionCol, hub.region)
-                        put(DBHandler.hubNameCol, hub.hub_name)
-                        put(DBHandler.hubCodeCol, hub.hub_code)
-                        put(DBHandler.addressCol, hub.address)
-                        put(DBHandler.ownershipCol, hub.ownership)
-                        put(DBHandler.floorSizeCol, hub.floor_size)
-                        put(DBHandler.facilitiesCol, hub.facilities)
-                        put(DBHandler.inputCenterCol, hub.input_center)
-                        put(DBHandler.typeOfBuildingCol, hub.type_of_building)
-                        put(DBHandler.longitudeCol, hub.longitude)
-                        put(DBHandler.latitudeCol, hub.latitude)
-                        put(DBHandler.yearEstablishedCol, hub.year_established)
-                        put(DBHandler.hubUserIdCol, hub.user_id)
-                    }
-
-                    val hubResult = db.insertWithOnConflict(DBHandler.HUB_TABLE_NAME, null, hubValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (hubResult == -1L) {
-                        // Log.e("DataSyncManager", "Failed to insert hub ${hub.id}")
-                    }
-
-                    // Insert key contacts into key_contacts table
-                    hub.key_contacts?.forEach { keyContact ->
-                        val keyContactValues = ContentValues().apply {
-                            put(DBHandler.KEY_CONTACT_ID_COL, keyContact.id)
-                            put(DBHandler.KEY_CONTACT_OTHER_NAME_COL, keyContact.other_name)
-                            put(DBHandler.KEY_CONTACT_LAST_NAME_COL, keyContact.last_name)
-                            put(DBHandler.GENDER_COL, keyContact.gender)
-                            put(DBHandler.DATE_OF_BIRTH_COL, keyContact.date_of_birth)
-                            put(DBHandler.KEY_CONTACT_EMAIL_COL, keyContact.email)
-                            put(DBHandler.PHONE_NUMBER_COL, keyContact.phone_number)
-                            put(DBHandler.ID_NUMBER_COL, keyContact.id_number)
-                            put(DBHandler.KEY_CONTACT_ROLE_COL, keyContact.role)
-                            put(DBHandler.HUB_ID_FK_COL, keyContact.hub_id)
-                            put(DBHandler.BUYING_CENTER_ID_FK_COL, keyContact.buying_center_id)
-                        }
-
-                        val contactResult = db.insertWithOnConflict(DBHandler.KEY_CONTACTS_TABLE_NAME, null, keyContactValues, SQLiteDatabase.CONFLICT_REPLACE)
-                        if (contactResult == -1L) {
-                            Log.e("DataSyncManager", "Failed to insert key contact ${keyContact.id}")
-                        }
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting hubs", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No hubs to insert")
-        }
-    }
-
-    private fun syncBuyingCentersToLocalDatabase(buyingCenterResponse: BuyingCenterResponse) {
-        val buyingCenters = buyingCenterResponse.forms
-        if (buyingCenters.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${buyingCenters.size} buying centers to local database.")
-
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                buyingCenters.forEach { buyingCenter ->
-                    // Insert buying center details into buying centers table
-                    val buyingCenterValues = ContentValues().apply {
-                        put(DBHandler.BUYING_CENTER_ID_COL, buyingCenter.id)
-                        put(DBHandler.HUB_COL, buyingCenter.hub)
-                        put(DBHandler.COUNTY_COL, buyingCenter.county)
-                        put(DBHandler.SUB_COUNTY_COL, buyingCenter.sub_county)
-                        put(DBHandler.WARD_COL, buyingCenter.ward)
-                        put(DBHandler.VILLAGE_COL, buyingCenter.village)
-                        put(DBHandler.BUYING_CENTER_NAME_COL, buyingCenter.buying_center_name)
-                        put(DBHandler.BUYING_CENTER_CODE_COL, buyingCenter.buying_center_code)
-                        put(DBHandler.BUYING_CENTER_ADDRESS_COL, buyingCenter.address)
-                        put(DBHandler.BUYING_CENTER_YEAR_ESTABLISHED_COL, buyingCenter.year_established)
-                        put(DBHandler.BUYING_CENTER_OWNERSHIP_COL, buyingCenter.ownership)
-                        put(DBHandler.BUYING_CENTER_FLOOR_SIZE_COL, buyingCenter.floor_size)
-                        put(DBHandler.BUYING_CENTER_FACILITIES_COL, buyingCenter.facilities)
-                        put(DBHandler.BUYING_CENTER_INPUT_CENTER_COL, buyingCenter.input_center)
-                        put(DBHandler.BUYING_CENTER_TYPE_OF_BUILDING_COL, buyingCenter.type_of_building)
-                        put(DBHandler.BUYING_CENTER_LOCATION_COL, buyingCenter.location)
-                        put(DBHandler.BUYING_CENTER_USER_ID_COL, buyingCenter.user_id)
-                    }
-
-                    val buyingCenterResult = db.insertWithOnConflict(DBHandler.BUYING_CENTER_TABLE_NAME, null, buyingCenterValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (buyingCenterResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert buying center ${buyingCenter.id}")
-                    }
-
-                    // Insert key contacts into key_contacts table
-                    buyingCenter.key_contacts?.forEach { keyContact ->
-                        val keyContactValues = ContentValues().apply {
-                            put(DBHandler.KEY_CONTACT_ID_COL, keyContact.id)
-                            put(DBHandler.KEY_CONTACT_OTHER_NAME_COL, keyContact.other_name)
-                            put(DBHandler.KEY_CONTACT_LAST_NAME_COL, keyContact.last_name)
-                            put(DBHandler.GENDER_COL, keyContact.gender)
-                            put(DBHandler.DATE_OF_BIRTH_COL, keyContact.date_of_birth)
-                            put(DBHandler.KEY_CONTACT_EMAIL_COL, keyContact.email)
-                            put(DBHandler.PHONE_NUMBER_COL, keyContact.phone_number)
-                            put(DBHandler.ID_NUMBER_COL, keyContact.id_number)
-                            put(DBHandler.KEY_CONTACT_ROLE_COL, keyContact.role)
-                            put(DBHandler.HUB_ID_FK_COL, keyContact.hub_id)
-                            put(DBHandler.BUYING_CENTER_ID_FK_COL, keyContact.buying_center_id)
-                        }
-
-                        val contactResult = db.insertWithOnConflict(DBHandler.KEY_CONTACTS_TABLE_NAME, null, keyContactValues, SQLiteDatabase.CONFLICT_REPLACE)
-                        if (contactResult == -1L) {
-                            Log.e("DataSyncManager", "Failed to insert key contact ${keyContact.id}")
-                        }
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting buying centers", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No buying centers to insert")
-        }
-    }
-
-    private fun syncCigsToLocalDatabase(cigs: List<CIG>) {
-        if (cigs.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${cigs.size} CIGs to local database.")
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                cigs.forEach { cig ->
-                    // Insert CIG details into CIG table
-                    val cigValues = ContentValues().apply {
-                        put(DBHandler.CIG_ID_COL, cig.id)
-                        put(DBHandler.CIG_HUB_COL, cig.hub)
-                        put(DBHandler.CIG_NAME_COL, cig.cig_name)
-                        put(DBHandler.NO_OF_MEMBERS_COL, cig.no_of_members)
-                        put(DBHandler.DATE_ESTABLISHED_COL, cig.date_established)
-                        put(DBHandler.CONSTITUTION_COL, cig.constitution)
-                        put(DBHandler.REGISTRATION_COL, cig.registration)
-                        put(DBHandler.ELECTIONS_HELD_COL, cig.elections_held)
-                        put(DBHandler.DATE_OF_LAST_ELECTIONS_COL, cig.date_of_last_elections)
-                        put(DBHandler.MEETING_VENUE_COL, cig.meeting_venue)
-                        put(DBHandler.FREQUENCY_COL, cig.frequency)
-                        put(DBHandler.SCHEDULED_MEETING_DAY_COL, cig.scheduled_meeting_day)
-                        put(DBHandler.SCHEDULED_MEETING_TIME_COL, cig.scheduled_meeting_time)
-                        put(DBHandler.CIG_USER_ID_COL, cig.user_id)
-                    }
-
-                    val cigResult = db.insertWithOnConflict(DBHandler.CIG_TABLE_NAME, null, cigValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (cigResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert CIG ${cig.id}")
-                    }
-
-                    // Insert members into members table if they exist
-                    cig.members?.forEach { member ->
-                        val memberValues = ContentValues().apply {
-                            put(DBHandler.MEMBER_ID_COL, member.id)
-                            put(DBHandler.MEMBER_OTHER_NAME_COL, member.other_name)
-                            put(DBHandler.MEMBER_LAST_NAME_COL, member.last_name)
-                            put(DBHandler.GENDER_COL, member.gender)
-                            put(DBHandler.DATE_OF_BIRTH_COL, member.date_of_birth)
-                            put(DBHandler.MEMBER_EMAIL_COL, member.email)
-                            put(DBHandler.MEMBER_PHONE_NUMBER_COL, member.phone_number)
-                            put(DBHandler.MEMBER_ID_NUMBER_COL, member.id_number)
-                            put(DBHandler.PRODUCT_INVOLVED_COL, member.product_involved)
-                            put(DBHandler.HECTORAGE_REGISTERED_UNDER_CIG_COL, member.hectorage_registered_under_cig)
-                            put(DBHandler.MEMBER_CIG_ID_COL, member.cig_id)
-                        }
-
-                        val memberResult = db.insertWithOnConflict(DBHandler.MEMBERS_TABLE_NAME, null, memberValues, SQLiteDatabase.CONFLICT_REPLACE)
-                        if (memberResult == -1L) {
-                            Log.e("DataSyncManager", "Failed to insert member ${member.id}")
-                        }
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting CIGs", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No CIGs to insert")
-        }
     }
 
     private fun syncCustomUsersToLocalDatabase(customUsers: List<CustomUser>) {
@@ -3308,8 +2773,6 @@ class DataSyncManager(
         }
     }
 
-
-
     private fun syncTrainingToLocalDatabase(trainings: List<Training>) {
         if (trainings.isNotEmpty()) {
             Log.d("DataSyncManager", "Syncing ${trainings.size} Trainings to local database.")
@@ -3467,49 +2930,6 @@ class DataSyncManager(
         }
     }
 
-    private fun syncBuyingToLocalDatabase(buyings: List<BuyingFarmer>) {
-        if (buyings.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${buyings.size} Buyings to local database.")
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                buyings.forEach { buying ->
-                    // Convert quality object to a JSON string
-                    val qualityJson = Gson().toJson(buying.quality)
-
-                    // Insert Buying details into Buying table
-                    val buyingValues = ContentValues().apply {
-                        put(DBHandler.BUYING_FARMER_ID_COL, buying.id)
-                        put(DBHandler.BUYING_FARMER_BUYING_CENTER_COL, buying.buying_center)
-                        put(DBHandler.BUYING_FARMER_PRODUCE_COL, buying.produce)
-                        put(DBHandler.BUYING_FARMER_PRODUCER_COL, buying.producer)
-                        put(DBHandler.BUYING_FARMER_GRN_NUMBER_COL, buying.grn_number)
-                        put(DBHandler.BUYING_FARMER_UNIT_COL, buying.unit)
-                        put(DBHandler.BUYING_FARMER_WEIGHT_COL, buying.weight)
-                        put(DBHandler.BUYING_FARMER_ACTION_COL, buying.action)
-                        put(DBHandler.BUYING_FARMER_LOADED_COL, if (buying.loaded) 1 else 0)
-                        put(DBHandler.BUYING_FARMER_USER_ID_FK_COL, buying.user_id)
-                        put(DBHandler.BUYING_FARMER_QUALITY_COL, qualityJson)
-                    }
-
-                    val buyingResult = db.insertWithOnConflict(DBHandler.BUYING_FARMER_TABLE_NAME, null, buyingValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (buyingResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert Buying ${buying.id}")
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting Buyings", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No Buyings to insert")
-        }
-    }
-
     private fun syncSellingToLocalDatabase(sellings: List<BuyingCustomer>) {
         if (sellings.isNotEmpty()) {
             Log.d("DataSyncManager", "Syncing ${sellings.size} Sellings to local database.")
@@ -3526,16 +2946,20 @@ class DataSyncManager(
                         // id is auto-incremented, so it's not included here
                         put(DBHandler.BUYING_CUSTOMER_PRODUCE_COL, selling.produce)
                         put(DBHandler.BUYING_CUSTOMER_CUSTOMER_COL, selling.customer)
-                        //put(DBHandler.BUYING_CUSTOMER_GRN_NUMBER_COL, selling.grn_number)
-                        put(DBHandler.BUYING_CUSTOMER_GRN_NUMBER_COL, selling.grn_number ?: "UNKNOWN")
+                        put(DBHandler.BUYING_CUSTOMER_GRN_NUMBER_COL, selling.grn_number ?: "UNKNOWN") // Provide default for GRN if necessary
 
                         put(DBHandler.BUYING_CUSTOMER_UNIT_COL, selling.unit)
                         put(DBHandler.BUYING_CUSTOMER_WEIGHT_COL, selling.weight)
-                        put(DBHandler.BUYING_CUSTOMER_ACTION_COL, selling.action)
+
+                        // *** Provide a default value for action if it's null ***
+                        put(DBHandler.BUYING_CUSTOMER_ACTION_COL, selling.action ?: "DEFAULT_ACTION") // Or any other sensible default string
+
                         put(DBHandler.BUYING_CUSTOMER_ONLINE_PRICE_COL, selling.online_price)
                         put(DBHandler.BUYING_CUSTOMER_LOADED_COL, if (selling.loaded) 1 else 0)
                         put(DBHandler.BUYING_CUSTOMER_USER_ID_FK_COL, selling.user_id)
                         put(DBHandler.BUYING_CUSTOMER_QUALITY_COL, qualityJson)
+                        // Assuming these records from the server are not "offline" in the local sense
+                        put(DBHandler.IS_OFFLINE_COL, 0)
                     }
 
                     val sellingResult = db.insertWithOnConflict(DBHandler.BUYING_CUSTOMER_TABLE_NAME, null, sellingValues, SQLiteDatabase.CONFLICT_REPLACE)
@@ -3599,15 +3023,14 @@ class DataSyncManager(
             db.beginTransaction()
             try {
                 payments.forEach { payment ->
-                    // Insert Payment details into Payment table
                     val paymentValues = ContentValues().apply {
                         put(DBHandler.PAYMENT_FARMER_ID_COL, payment.id)
-                        put(DBHandler.PAYMENT_FARMER_BUYING_CENTER_COL, payment.buying_center)
-                        put(DBHandler.PAYMENT_FARMER_CIG_COL, payment.cig)
-                        put(DBHandler.PAYMENT_FARMER_PRODUCER_COL, payment.producer)
-                        put(DBHandler.PAYMENT_FARMER_GRN_COL, payment.grn)
+                        put(DBHandler.PAYMENT_FARMER_BUYING_CENTER_COL, payment.buying_center ?: "UNKNOWN_BUYING_CENTER")
+                        put(DBHandler.PAYMENT_FARMER_CIG_COL, payment.cig ?: "UNKNOWN_CIG")
+                        put(DBHandler.PAYMENT_FARMER_PRODUCER_COL, payment.producer ?: "UNKNOWN_PRODUCER")
+                        put(DBHandler.PAYMENT_FARMER_GRN_COL, payment.grn ?: "UNKNOWN_GRN") // Ensure this has a default
                         put(DBHandler.PAYMENT_FARMER_NET_BALANCE_COL, payment.net_balance)
-                        put(DBHandler.PAYMENT_FARMER_PAYMENT_TYPE_COL, payment.payment_type)
+                        put(DBHandler.PAYMENT_FARMER_PAYMENT_TYPE_COL, payment.payment_type ?: "UNKNOWN_PAYMENT_TYPE") // Added default
                         put(DBHandler.PAYMENT_FARMER_OUTSTANDING_LOAN_AMOUNT_COL, payment.outstanding_loan_amount)
                         put(DBHandler.PAYMENT_FARMER_PAYMENT_DUE_COL, payment.payment_due)
                         put(DBHandler.PAYMENT_FARMER_SET_LOAN_DEDUCTION_COL, payment.set_loan_deduction)
@@ -3615,7 +3038,7 @@ class DataSyncManager(
                         put(DBHandler.PAYMENT_FARMER_NET_BALANCE_AFTER_LOAN_DEDUCTION_COL, payment.net_balance_after_loan_deduction)
                         put(DBHandler.PAYMENT_FARMER_COMMENT_COL, payment.comment)
                         put(DBHandler.PAYMENT_FARMER_USER_ID_FK_COL, payment.user_id)
-                        put(DBHandler.IS_OFFLINE_COL, 0) // Default value for is_offline
+                        put(DBHandler.IS_OFFLINE_COL, 0)
                     }
 
                     val paymentResult = db.insertWithOnConflict(DBHandler.PAYMENT_FARMER_TABLE_NAME, null, paymentValues, SQLiteDatabase.CONFLICT_REPLACE)
@@ -3623,133 +3046,55 @@ class DataSyncManager(
                         Log.e("DataSyncManager", "Failed to insert payment ${payment.id}")
                     }
                 }
-
                 db.setTransactionSuccessful()
             } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting Payments", e)
+                Log.e("DataSyncManager", "Error inserting Payments for Farmers", e) // Clarified log
             } finally {
                 db.endTransaction()
             }
         } else {
-            Log.d("DataSyncManager", "No Payments to insert")
+            Log.d("DataSyncManager", "No Farmer Payments to insert") // Clarified log
         }
     }
-
     private fun syncReceivePaymentToLocalDatabase(payments: List<PaymentCustomer>) {
         if (payments.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${payments.size} Payments to local database.")
+            Log.d("DataSyncManager", "Syncing ${payments.size} Received Customer Payments to local database.") // Clarified log
 
             val db = dbHandler.writableDatabase
             db.beginTransaction()
             try {
                 payments.forEach { payment ->
-                    // Insert Payment details into Payment table
                     val paymentValues = ContentValues().apply {
                         put(DBHandler.PAYMENT_CUSTOMER_ID_COL, payment.id)
-                        put(DBHandler.PAYMENT_CUSTOMER_VILLAGE_OR_ESTATE_COL, payment.village_or_estate)
-                        put(DBHandler.PAYMENT_CUSTOMER_CUSTOMER_COL, payment.customer)
-                        put(DBHandler.PAYMENT_CUSTOMER_GRN_COL, payment.grn)
+                        put(DBHandler.PAYMENT_CUSTOMER_VILLAGE_OR_ESTATE_COL, payment.village_or_estate ?: "UNKNOWN_VILLAGE_OR_ESTATE")
+                        put(DBHandler.PAYMENT_CUSTOMER_CUSTOMER_COL, payment.customer ?: "UNKNOWN_CUSTOMER")
+                        put(DBHandler.PAYMENT_CUSTOMER_GRN_COL, payment.grn ?: "UNKNOWN_GRN")
                         put(DBHandler.PAYMENT_CUSTOMER_AMOUNT_COL, payment.amount)
                         put(DBHandler.PAYMENT_CUSTOMER_NET_BALANCE_COL, payment.net_balance)
-                        put(DBHandler.PAYMENT_CUSTOMER_PAYMENT_TYPE_COL, payment.payment_type)
+                        put(DBHandler.PAYMENT_CUSTOMER_PAYMENT_TYPE_COL, payment.payment_type ?: "UNKNOWN_PAYMENT_TYPE") // Applied fix
                         put(DBHandler.PAYMENT_CUSTOMER_ENTER_AMOUNT_COL, payment.enter_amount)
                         put(DBHandler.PAYMENT_CUSTOMER_NET_BALANCE_BEFORE_COL, payment.net_balance_before)
                         put(DBHandler.PAYMENT_CUSTOMER_NET_BALANCE_AFTER_COL, payment.net_balance_after)
                         put(DBHandler.PAYMENT_CUSTOMER_COMMENT_COL, payment.comment)
                         put(DBHandler.PAYMENT_CUSTOMER_USER_ID_FK_COL, payment.user_id)
+                        put(DBHandler.IS_OFFLINE_COL, 0)
                     }
 
                     val paymentResult = db.insertWithOnConflict(DBHandler.PAYMENT_CUSTOMER_TABLE_NAME, null, paymentValues, SQLiteDatabase.CONFLICT_REPLACE)
                     if (paymentResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert payment ${payment.id}")
+                        Log.e("DataSyncManager", "Failed to insert PaymentCustomer ${payment.id}")
                     }
                 }
-
                 db.setTransactionSuccessful()
             } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting Payments", e)
+                Log.e("DataSyncManager", "Error inserting PaymentCustomers", e)
             } finally {
                 db.endTransaction()
             }
         } else {
-            Log.d("DataSyncManager", "No Payments to insert")
+            Log.d("DataSyncManager", "No PaymentCustomers to insert")
         }
     }
-
-
-    private fun syncLoadingToLocalDatabase(loadings: List<Loading>) {
-        if (loadings.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${loadings.size} Loadings to local database.")
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                loadings.forEach { loading ->
-                    // Insert Loading details into loading table
-                    val loadingValues = ContentValues().apply {
-                        put(DBHandler.LOADING_ID_COL, loading.id)
-                        put(DBHandler.LOADING_GRN_COL, loading.grn)
-                        put(DBHandler.LOADING_TOTAL_WEIGHT_COL, loading.total_weight)
-                        put(DBHandler.LOADING_TRUCK_LOADING_NUMBER_COL, loading.truck_loading_number)
-                        put(DBHandler.LOADING_FROM_COL, loading.from_)
-                        put("`to`", loading.to)
-                        put(DBHandler.LOADING_COMMENT_COL, loading.comment)
-                        put(DBHandler.LOADING_OFFLOADED_COL, loading.offloaded)
-                        put(DBHandler.LOADING_USER_ID_FK_COL, loading.user_id)
-                    }
-
-                    val loadingResult = db.insertWithOnConflict(DBHandler.LOADING_TABLE_NAME, null, loadingValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (loadingResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert loading ${loading.id}")
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting Loadings", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No Loadings to insert")
-        }
-    }
-
-    private fun syncOffloadingToLocalDatabase(offloadings: List<Offloading>) {
-        if (offloadings.isNotEmpty()) {
-            Log.d("DataSyncManager", "Syncing ${offloadings.size} Offloadings to local database.")
-
-            val db = dbHandler.writableDatabase
-            db.beginTransaction()
-            try {
-                offloadings.forEach { offloading ->
-                    // Insert Offloading details into offloading table
-                    val offloadingValues = ContentValues().apply {
-                        put(DBHandler.OFFLOADING_ID_COL, offloading.id)
-                        put(DBHandler.OFFLOADING_OFFLOADED_LOAD_COL, offloading.offloaded_load)
-                        put(DBHandler.OFFLOADING_TOTAL_WEIGHT_COL, offloading.total_weight)
-                        put(DBHandler.OFFLOADING_TRUCK_OFFLOADING_NUMBER_COL, offloading.truck_offloading_number)
-                        put(DBHandler.OFFLOADING_COMMENT_COL, offloading.comment)
-                        put(DBHandler.OFFLOADING_USER_ID_FK_COL, offloading.user_id)
-                    }
-
-                    val offloadingResult = db.insertWithOnConflict(DBHandler.OFFLOADING_TABLE_NAME, null, offloadingValues, SQLiteDatabase.CONFLICT_REPLACE)
-                    if (offloadingResult == -1L) {
-                        Log.e("DataSyncManager", "Failed to insert offloading ${offloading.id}")
-                    }
-                }
-
-                db.setTransactionSuccessful()
-            } catch (e: Exception) {
-                Log.e("DataSyncManager", "Error inserting Offloadings", e)
-            } finally {
-                db.endTransaction()
-            }
-        } else {
-            Log.d("DataSyncManager", "No Offloadings to insert")
-        }
-    }
-
     private fun syncRuralWorkersToLocalDatabase(ruralWorkers: List<RuralWorker>) {
         if (ruralWorkers.isNotEmpty()) {
             Log.d("DataSyncManager", "Syncing ${ruralWorkers.size} Rural Workers to local database.")

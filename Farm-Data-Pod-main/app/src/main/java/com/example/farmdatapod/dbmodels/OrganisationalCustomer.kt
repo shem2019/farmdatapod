@@ -9,7 +9,7 @@ class OrganisationalCustomer {
     var sector: String? = null
     var date_of_registration: String? = null
     var email: String? = null
-    var phone_number: Int = 0
+    var phone_number: String? = null
     var county: String? = null
     var sub_county: String? = null
     var ward: String? = null
@@ -20,21 +20,21 @@ class OrganisationalCustomer {
     var gender1: String? = null
     var date_of_birth1: String? = null
     var email1: String? = null
-    var phone_number1: Int = 0
+    var phone_number1: String? = null
     var other_name2: String? = null
     var last_name2: String? = null
     var id_number2: Int = 0
     var gender2: String? = null
     var date_of_birth2: String? = null
     var email2: String? = null
-    var phone_number2: Int = 0
+    var phone_number2: String? = null
     var other_name3: String? = null
     var last_name3: String? = null
     var id_number3: Int = 0
     var gender3: String? = null
     var date_of_birth3: String? = null
     var email3: String? = null
-    var phone_number3: Int = 0
+    var phone_number3: String? = null
     var user_id: String? = null
     var user_authorised: Boolean = false
     var authorisation_token: String? = null
@@ -45,14 +45,14 @@ class OrganisationalCustomer {
 
     constructor(
         id: Int, company_name: String?, customer_code: String?, registration_number: Int,
-        sector: String?, date_of_registration: String?, email: String?, phone_number: Int,
+        sector: String?, date_of_registration: String?, email: String?, phone_number: String,
         county: String?, sub_county: String?, ward: String?, village: String?,
         other_name1: String?, last_name1: String?, id_number1: Int, gender1: String?,
-        date_of_birth1: String?, email1: String?, phone_number1: Int,
+        date_of_birth1: String?, email1: String?, phone_number1: String,
         other_name2: String?, last_name2: String?, id_number2: Int, gender2: String?,
-        date_of_birth2: String?, email2: String?, phone_number2: Int,
+        date_of_birth2: String?, email2: String?, phone_number2: String,
         other_name3: String?, last_name3: String?, id_number3: Int, gender3: String?,
-        date_of_birth3: String?, email3: String?, phone_number3: Int,
+        date_of_birth3: String?, email3: String?, phone_number3: String,
         user_id: String?, user_authorised: Boolean, authorisation_token: String?
     ) {
         this.id = id
