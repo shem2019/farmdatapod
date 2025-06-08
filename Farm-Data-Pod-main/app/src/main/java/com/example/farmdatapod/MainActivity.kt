@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                 syncManager.cancelAllSync() //
 
                 // Clear authentication token
-                tokenManager.clearToken() //
+                tokenManager.clearTokenAndExpiry() //
 
                 // Navigate to login screen
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java).apply {

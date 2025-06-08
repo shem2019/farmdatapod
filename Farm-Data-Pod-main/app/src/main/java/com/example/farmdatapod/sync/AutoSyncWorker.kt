@@ -76,7 +76,7 @@ class AutoSyncWorker(
     private fun logoutUser() {
         try {
             // Clear token
-            tokenManager.clearToken()
+            tokenManager.clearTokenAndExpiry()
 
             // Start login activity
             val intent = Intent(applicationContext, LoginActivity::class.java).apply {

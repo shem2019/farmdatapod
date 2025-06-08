@@ -3,14 +3,15 @@ package com.example.farmdatapod
 import android.app.Application
 import android.util.Log
 import com.example.farmdatapod.sync.SyncManager
+import com.example.farmdatapod.utils.SharedPrefs // Import SharedPrefs
 import com.example.farmdatapod.utils.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 class FarmDataPodApplication : Application() {
-    lateinit var syncManager: SyncManager // Keep as is or make private and provide getter
-    lateinit var tokenManager: TokenManager // Make public or provide getter
+    lateinit var syncManager: SyncManager
+    lateinit var tokenManager: TokenManager
 
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -25,9 +26,14 @@ class FarmDataPodApplication : Application() {
         instance = this
 
         try {
-            // Initialize managers ONCE here
-            tokenManager = TokenManager(applicationContext) // Initialize here
-            syncManager = SyncManager(applicationContext)   // Initialize here
+            // Step 1: Initialize SharedPrefs
+            val sharedPrefs = SharedPrefs(applicationContext) //
+
+            // Step 2: Initialize TokenManager with the SharedPrefs instance
+            tokenManager = TokenManager(sharedPrefs) // Fix for line 29: Pass SharedPrefs instead of Context
+
+            // Initialize SyncManager as it depends on Context (its constructor was not changed)
+            syncManager = SyncManager(applicationContext)
 
             setupSyncIfNeeded()
         } catch (e: Exception) {
@@ -36,16 +42,16 @@ class FarmDataPodApplication : Application() {
     }
 
     private fun setupSyncIfNeeded() {
-        // Now this will use the correctly initialized tokenManager
+        // This will now correctly use the initialized tokenManager and its isTokenValid() method
         if (tokenManager.isTokenValid()) { //
-            Log.d(TAG, "User is logged in, setting up sync")
-            syncManager.setupPeriodicSync()
+            Log.d(TAG, "User is logged in, setting up sync") //
+            syncManager.setupPeriodicSync() //
         } else {
-            Log.d(TAG, "No valid token found, sync not initialized on app start")
+            Log.d(TAG, "No valid token found, sync not initialized on app start") //
         }
     }
 
-    // Provide getters if managers are private
+    // Provide getters if managers are private (existing comments)
     // fun getSyncManager() = syncManager
     // fun getTokenManager() = tokenManager
 }

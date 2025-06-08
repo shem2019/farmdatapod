@@ -108,7 +108,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logout() {
         viewModelScope.launch {
-            tokenManager.clearToken() // Use TokenManager
+            tokenManager.clearTokenAndExpiry() // Use TokenManager
             // sharedPrefs.clearUserId() // If you manage this separately
             sharedPrefs.setLoggedIn(false) // This flag might still be useful for UI state
             // but isTokenValid should be the source of truth for sessions.

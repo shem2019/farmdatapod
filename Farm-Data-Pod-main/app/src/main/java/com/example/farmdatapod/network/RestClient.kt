@@ -1,6 +1,7 @@
 package com.example.farmdatapod.network
 
 import android.content.Context
+import com.example.farmdatapod.utils.SharedPrefs
 import com.example.farmdatapod.utils.TokenManager // Import TokenManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -9,68 +10,102 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RestClient {
-    private const val BASE_URL = "https://farmdatapod.net/"
-    private const val MPESA_BASE_URL = "https://sandbox.safaricom.co.ke/"
+    private const val BASE_URL = "https://farmdatapod.net/" //
+    private const val MPESA_BASE_URL = "https://sandbox.safaricom.co.ke/" //
 
-    private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY // Use Level.BODY for detailed logs, NONE for production
+    private val loggingInterceptor = HttpLoggingInterceptor().apply { //
+        level = HttpLoggingInterceptor.Level.BODY //
     }
 
-    // Client for M-Pesa (presumably does not need auth token from TokenManager)
-    private val mpesaClient: OkHttpClient by lazy {
-        OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .build()
+    @Volatile private var apiService: ApiService? = null
+    @Volatile private var mpesaApiService: MpesaApiService? = null
+
+    /**
+     * Creates and returns an OkHttpClient instance with the AuthInterceptor.
+     * The AuthInterceptor is initialized with TokenManager to retrieve the token.
+     * @param context The application context.
+     * @return An OkHttpClient configured with logging and authentication.
+     */
+    private fun createOkHttpClient(context: Context): OkHttpClient {
+        // Step 1: Initialize SharedPrefs (the primary storage layer)
+        val sharedPrefs = SharedPrefs(context)
+        // Step 2: Initialize TokenManager (the token logic layer) using SharedPrefs for storage
+        val tokenManager = TokenManager(sharedPrefs)
+        // Step 3: Initialize AuthInterceptor (the network interception layer) using TokenManager for token access
+        val authInterceptor = AuthInterceptor(tokenManager)
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor) //
+            .addInterceptor(authInterceptor) // Add the correctly initialized AuthInterceptor
+            .connectTimeout(60, TimeUnit.SECONDS) //
+            .readTimeout(60, TimeUnit.SECONDS) //
+            .writeTimeout(60, TimeUnit.SECONDS) //
+            .build() //
     }
 
-    // Helper function to create a Retrofit instance
-    // It will now conditionally add the AuthInterceptor
-    private fun getRetrofitInstance(context: Context, tokenManager: TokenManager?): Retrofit {
-        val httpClientBuilder = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+    /**
+     * Creates and returns an OkHttpClient instance for Mpesa API calls.
+     * This client does not include the AuthInterceptor as Mpesa API typically uses different authentication.
+     * @return An OkHttpClient configured with logging for Mpesa API.
+     */
+    private fun createMpesaOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor) //
+            .connectTimeout(60, TimeUnit.SECONDS) //
+            .readTimeout(60, TimeUnit.SECONDS) //
+            .writeTimeout(60, TimeUnit.SECONDS) //
+            .build() //
+    }
 
-        // If a TokenManager is provided, add the AuthInterceptor
-        tokenManager?.let {
-            httpClientBuilder.addInterceptor(AuthInterceptor(it, context.applicationContext))
+    /**
+     * Provides the singleton instance of ApiService.
+     * The service is lazily initialized the first time it's requested.
+     * @param context The application context.
+     * @return The ApiService instance.
+     */
+    fun getApiService(context: Context): ApiService { //
+        return apiService ?: synchronized(this) {
+            apiService ?: buildApiService(context).also { apiService = it }
         }
-
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(httpClientBuilder.build())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
     }
 
     /**
-     * Provides an ApiService instance for NON-AUTHENTICATED calls.
+     * Builds the ApiService instance.
+     * @param context The application context.
+     * @return The newly built ApiService instance.
      */
-    fun getApiService(context: Context): ApiService {
-        // This version does NOT include the AuthInterceptor
-        return getRetrofitInstance(context, null).create(ApiService::class.java)
+    private fun buildApiService(context: Context): ApiService {
+        val client = createOkHttpClient(context) // Client is built using the new createOkHttpClient
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL) //
+            .client(client) //
+            .addConverterFactory(GsonConverterFactory.create()) //
+            .build() //
+            .create(ApiService::class.java) //
     }
 
     /**
-     * Provides an ApiService instance for AUTHENTICATED calls.
-     * It requires the application-scoped TokenManager.
+     * Provides the singleton instance of MpesaApiService.
+     * The service is lazily initialized the first time it's requested.
+     * @return The MpesaApiService instance.
      */
-    fun getApiService(context: Context, tokenManager: TokenManager): ApiService {
-        // This version WILL include the AuthInterceptor using the provided TokenManager
-        return getRetrofitInstance(context, tokenManager).create(ApiService::class.java)
+    fun getMpesaApiService(): MpesaApiService { //
+        return mpesaApiService ?: synchronized(this) {
+            mpesaApiService ?: buildMpesaApiService().also { mpesaApiService = it }
+        }
     }
 
-    // M-Pesa service - assuming it does not need our app's auth token
-    fun getMpesaApiService(): MpesaApiService {
+    /**
+     * Builds the MpesaApiService instance.
+     * @return The newly built MpesaApiService instance.
+     */
+    private fun buildMpesaApiService(): MpesaApiService {
+        val client = createMpesaOkHttpClient() //
         return Retrofit.Builder()
-            .baseUrl(MPESA_BASE_URL)
-            .client(mpesaClient) // Uses its own client
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(MpesaApiService::class.java)
+            .baseUrl(MPESA_BASE_URL) //
+            .client(client) //
+            .addConverterFactory(GsonConverterFactory.create()) //
+            .build() //
+            .create(MpesaApiService::class.java) //
     }
 }
