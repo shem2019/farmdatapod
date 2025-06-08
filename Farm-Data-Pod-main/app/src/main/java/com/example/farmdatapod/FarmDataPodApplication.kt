@@ -9,15 +9,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 class FarmDataPodApplication : Application() {
-    private lateinit var syncManager: SyncManager
-    private lateinit var tokenManager: TokenManager
+    lateinit var syncManager: SyncManager // Keep as is or make private and provide getter
+    lateinit var tokenManager: TokenManager // Make public or provide getter
 
     val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     companion object {
         private const val TAG = "FarmDataPodApplication"
         private lateinit var instance: FarmDataPodApplication
-
         fun getInstance(): FarmDataPodApplication = instance
     }
 
@@ -26,28 +25,27 @@ class FarmDataPodApplication : Application() {
         instance = this
 
         try {
-            initializeManagers()
+            // Initialize managers ONCE here
+            tokenManager = TokenManager(applicationContext) // Initialize here
+            syncManager = SyncManager(applicationContext)   // Initialize here
+
             setupSyncIfNeeded()
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing application", e)
         }
     }
 
-    private fun initializeManagers() {
-        Log.d(TAG, "Initializing managers")
-        syncManager = SyncManager(this)
-        tokenManager = TokenManager(this)
-    }
-
     private fun setupSyncIfNeeded() {
-        if (tokenManager.isTokenValid()) {
+        // Now this will use the correctly initialized tokenManager
+        if (tokenManager.isTokenValid()) { //
             Log.d(TAG, "User is logged in, setting up sync")
             syncManager.setupPeriodicSync()
         } else {
-            Log.d(TAG, "No valid token found, sync not initialized")
+            Log.d(TAG, "No valid token found, sync not initialized on app start")
         }
     }
 
-    fun getSyncManager() = syncManager
-    fun getTokenManager() = tokenManager
+    // Provide getters if managers are private
+    // fun getSyncManager() = syncManager
+    // fun getTokenManager() = tokenManager
 }

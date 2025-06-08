@@ -3610,7 +3610,7 @@ class DBHandler (context: Context?) :
 
     companion object {
         private const val DB_NAME = "farmdatasqldb"
-        private const val DB_VERSION = 3
+        private const val DB_VERSION = 4
 
         // Table names
         const val usersTableName: String = "users"

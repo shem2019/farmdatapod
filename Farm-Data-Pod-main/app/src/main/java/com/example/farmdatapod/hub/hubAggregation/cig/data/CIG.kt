@@ -10,7 +10,7 @@ data class CIG(
     val id: Int = 0,
 
     @ColumnInfo(name = "server_id")
-    val serverId: Int? = null,
+    var serverId: Int? = null, // Made 'var' to be updatable after sync
 
     @ColumnInfo(name = "cig_name")
     val cigName: String,
@@ -25,13 +25,19 @@ data class CIG(
     val dateEstablished: String,
 
     @ColumnInfo(name = "constitution")
-    val constitution: String?,
+    val constitution: String?, // This will store the URL or "No"
 
     @ColumnInfo(name = "registration")
-    val registration: String?,
+    val registration: String?, // This will store the URL or "No"
+
+    @ColumnInfo(name = "certificate")
+    val certificate: String?, // This will store the URL or "No"
+
+    @ColumnInfo(name = "membership_register") // This matches the API field name
+    val membershipRegister: String,
 
     @ColumnInfo(name = "elections_held")
-    val electionsHeld: String?,
+    val electionsHeld: String?, // This will store the URL or "No"
 
     @ColumnInfo(name = "date_of_last_elections")
     val dateOfLastElections: String,
@@ -52,37 +58,10 @@ data class CIG(
     val userId: String?,
 
     @ColumnInfo(name = "sync_status")
-    val syncStatus: Boolean = false,
+    var syncStatus: Boolean = false, // Made 'var' to be updatable
 
-    // Member fields
-    @ColumnInfo(name = "member_other_name")
-    val memberOtherName: String,
-
-    @ColumnInfo(name = "member_last_name")
-    val memberLastName: String,
-
-    @ColumnInfo(name = "member_gender")
-    val memberGender: String,
-
-    @ColumnInfo(name = "member_date_of_birth")
-    val memberDateOfBirth: String,
-
-    @ColumnInfo(name = "member_email")
-    val memberEmail: String,
-
-    @ColumnInfo(name = "member_phone_number")
-    val memberPhoneNumber: Long,
-
-    @ColumnInfo(name = "member_id_number")
-    val memberIdNumber: Int,
-
-    @ColumnInfo(name = "product_involved")
-    val productInvolved: String,
-
-    @ColumnInfo(name = "hectorage_registered_under_cig")
-    val hectorageRegisteredUnderCig: String,
-
-    @ColumnInfo(name = "cig_id")
-    val cigId: Int? = null
+    // THIS IS THE KEY CHANGE:
+    // We will store the entire list of members as a single JSON string.
+    @ColumnInfo(name = "members_json")
+    val membersJson: String? = null
 )
-

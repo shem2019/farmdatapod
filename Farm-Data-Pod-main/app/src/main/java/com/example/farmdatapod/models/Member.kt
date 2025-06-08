@@ -11,3 +11,4 @@ data class Member(
     val phone_number: Int,
     val product_involved: String
 )
+

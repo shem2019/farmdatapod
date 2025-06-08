@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.farmdatapod.FarmDataPodApplication
 import com.example.farmdatapod.auth.LoginActivity
 import com.example.farmdatapod.utils.TokenManager
 
@@ -13,8 +14,9 @@ class AutoSyncWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
     private val TAG = "AutoSyncWorker"
-    private val tokenManager = TokenManager(appContext)
-    private val syncManager = SyncManager(appContext)
+    private val tokenManager = (appContext.applicationContext as FarmDataPodApplication).tokenManager
+    private val syncManager = (appContext.applicationContext as FarmDataPodApplication).syncManager
+
 
     override suspend fun doWork(): Result {
         try {

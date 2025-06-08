@@ -13,7 +13,9 @@ import com.example.farmdatapod.logistics.inboundAndOutbound.outboundLogistics.lo
 import com.example.farmdatapod.logistics.inputTransfer.model.InputTransferModel
 import com.example.farmdatapod.models.BaitModel
 import com.example.farmdatapod.models.BuyingCentreRequest
+import com.example.farmdatapod.models.CIGCreateRequest
 import com.example.farmdatapod.models.CIGRegistrationItem
+import com.example.farmdatapod.models.CIGServerResponse
 import com.example.farmdatapod.models.CropManagementModel
 import com.example.farmdatapod.models.CropNutritionModel
 import com.example.farmdatapod.models.CropProtectionModel
@@ -189,7 +191,7 @@ interface ApiService {
     ): Call<BuyingCentreRequest>
 
     @POST("/cigs")
-    fun registerCig(@Body cigRegistrationItem: CIGRegistrationItem): Call<CIGRegistrationItem>
+    suspend fun registerCIG(@Body cigCreateRequest: CIGCreateRequest): Response<CIGServerResponse>
 
     @POST("/attendance")
     fun postAttendance(@Body attendance: Attendance): Call<Void>

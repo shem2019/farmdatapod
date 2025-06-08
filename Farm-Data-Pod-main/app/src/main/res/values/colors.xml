@@ -25,5 +25,7 @@
 
 
     <color name="colorPrimary">@color/green</color>
+    <color name="red_offline_status">#FF0000</color>
+    <color name="green_online_status">#00F400</color>
 
 </resources>

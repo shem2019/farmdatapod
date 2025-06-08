@@ -4,14 +4,15 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.fragment.NavHostFragment
+import androidx.lifecycle.ViewModelProvider // Added
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import com.example.farmdatapod.auth.LoginActivity
+import com.example.farmdatapod.network.NetworkViewModel // Added
 import com.example.farmdatapod.sync.SyncManager
 import com.example.farmdatapod.utils.TokenManager
 import kotlinx.coroutines.launch
@@ -19,13 +20,21 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var syncManager: SyncManager
     private lateinit var tokenManager: TokenManager
+    private lateinit var networkViewModel: NetworkViewModel // Added
+
+    // To prevent multiple syncs if network state changes rapidly
+    private var isSyncing = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize managers
-        syncManager = SyncManager(this)
-        tokenManager = TokenManager(this)
+        syncManager = (application as FarmDataPodApplication).syncManager
+        tokenManager = (application as FarmDataPodApplication).tokenManager
+
+        // Initialize NetworkViewModel using the application context from FarmDataPodApplication
+        networkViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(application)).get(NetworkViewModel::class.java) // Modified initialization
+
 
         // Setup periodic sync if user is logged in
         if (tokenManager.isTokenValid()) {
@@ -37,6 +46,9 @@ class MainActivity : AppCompatActivity() {
 
         // Navigation Setup
         handleNavigation()
+
+        // Observe Network Changes
+        observeNetworkChanges() // Added
     }
 
     private fun setupSync() {
@@ -44,17 +56,54 @@ class MainActivity : AppCompatActivity() {
             // Setup periodic background sync
             syncManager.setupPeriodicSync()
 
-            // Perform immediate sync
-            lifecycleScope.launch {
-                try {
-                    val result = syncManager.performFullSync()  // Direct call instead of syncNow
-                    Log.d(TAG, "Initial sync result: $result")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Initial sync failed", e)
+            // Perform initial immediate sync only if network is available
+            if (networkViewModel.networkLiveData.value == true && !isSyncing) {
+                isSyncing = true
+                lifecycleScope.launch {
+                    try {
+                        Log.d(TAG, "Initial sync triggered by setupSync")
+                        val result = syncManager.performFullSync()
+                        Log.d(TAG, "Initial sync result: $result")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Initial sync failed", e)
+                    } finally {
+                        isSyncing = false
+                    }
                 }
+            } else {
+                Log.d(TAG, "Initial sync skipped: Network not available or sync already in progress.")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error setting up sync", e)
+        }
+    }
+
+    // Added method to observe network changes
+    private fun observeNetworkChanges() {
+        networkViewModel.networkLiveData.observe(this) { isAvailable ->
+            Log.d(TAG, "Network status changed: ${if (isAvailable) "Available" else "Unavailable"}")
+            if (isAvailable && tokenManager.isTokenValid() && !isSyncing) {
+                isSyncing = true
+                Log.i(TAG, "Network available, attempting to sync data.")
+                lifecycleScope.launch {
+                    try {
+                        Log.d(TAG, "Sync triggered by network change")
+                        val result = syncManager.performFullSync()
+                        Log.d(TAG, "Sync result from network change: $result")
+                        // Optionally, provide user feedback based on syncResult
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Sync failed after network change", e)
+                    } finally {
+                        isSyncing = false
+                    }
+                }
+            } else if (!isAvailable) {
+                Log.i(TAG, "Network unavailable, sync will be attempted when network is back.")
+            } else if (isSyncing) {
+                Log.d(TAG, "Sync skipped: Another sync operation is already in progress.")
+            } else if (!tokenManager.isTokenValid()) {
+                Log.d(TAG, "Sync skipped: User token is not valid.")
+            }
         }
     }
 
@@ -93,10 +142,10 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 // Cancel all sync operations before logout
-                syncManager.cancelAllSync()
+                syncManager.cancelAllSync() //
 
                 // Clear authentication token
-                tokenManager.clearToken()
+                tokenManager.clearToken() //
 
                 // Navigate to login screen
                 startActivity(Intent(this@MainActivity, LoginActivity::class.java).apply {
@@ -113,14 +162,22 @@ class MainActivity : AppCompatActivity() {
     // Optional: Handle sync scheduling when app comes back to foreground
     override fun onResume() {
         super.onResume()
-        if (tokenManager.isTokenValid()) {
+        // Consider if this is still needed or if network observer is sufficient.
+        // If kept, ensure it also checks the isSyncing flag.
+        if (tokenManager.isTokenValid() && networkViewModel.networkLiveData.value == true && !isSyncing) { //
+            isSyncing = true
             lifecycleScope.launch {
                 try {
-                    syncManager.syncNow()
+                    Log.d(TAG, "Sync triggered by onResume")
+                    syncManager.syncNow() //
                 } catch (e: Exception) {
                     Log.e(TAG, "Sync on resume failed", e)
+                } finally {
+                    isSyncing = false
                 }
             }
+        } else {
+            Log.d(TAG, "Sync on resume skipped: Token invalid, network unavailable, or sync in progress.")
         }
     }
 }

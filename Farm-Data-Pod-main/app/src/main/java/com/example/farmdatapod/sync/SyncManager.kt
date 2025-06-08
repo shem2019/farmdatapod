@@ -40,8 +40,11 @@ import com.example.farmdatapod.season.planting.data.PlanPlantingRepository
 import com.example.farmdatapod.season.register.registerSeasonData.SeasonRepository
 import com.example.farmdatapod.season.scouting.data.BaitRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async // Added
+import kotlinx.coroutines.awaitAll // Added
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import java.util.Collections // Added for synchronized list
 
 class SyncManager(private val context: Context) {
     private val TAG = "SyncManager"
@@ -55,6 +58,7 @@ class SyncManager(private val context: Context) {
         "Germinations" to GerminationRepository(context),
         "Baits" to BaitRepository(context),
         "planting" to PlanPlantingRepository(context),
+        "hub" to HubRepository(context),
         "hub" to HubRepository(context),
         "buying_centers" to BuyingCenterRepository(context),
         "CIGs" to CIGRepository(context),
@@ -70,7 +74,7 @@ class SyncManager(private val context: Context) {
         "Land Preparation Management" to LandPreparationManagementRepository(context),
         "Germination Management" to GerminationManagementRepository(context),
         "Yield Forecast Management" to YieldForecastManagementRepository(context),
-        "Crop Management" to CropManagementActivityRepository(context),
+        "Crop Management Activity" to CropManagementActivityRepository(context), // Changed name for clarity if there are two "Crop Management"
         "Crop Nutrition Management" to CropNutritionManagementRepository(context),
         "Crop Protection Management" to CropProtectionManagementRepository(context),
         "Harvest Management" to HarvestManagementRepository(context),
@@ -119,50 +123,57 @@ class SyncManager(private val context: Context) {
         Log.d(TAG, "All sync cancelled")
     }
 
-    // Replace old syncNow with suspend function that performs sync directly
     suspend fun syncNow(): SyncResult {
         Log.d(TAG, "Starting immediate sync")
         return performFullSync()
     }
 
+    // syncRepository remains the same but will be called concurrently
     private suspend fun syncRepository(
         entityName: String,
         repository: SyncableRepository,
-        results: MutableList<EntitySyncResult>
+        results: MutableList<EntitySyncResult> // This list needs to be thread-safe if accessed concurrently
     ) {
         try {
             Log.d(TAG, "Starting sync for $entityName")
             repository.performFullSync().fold(
                 onSuccess = { stats ->
-                    results.add(
-                        EntitySyncResult(
-                            entityName = entityName,
-                            uploadedCount = stats.uploadedCount,
-                            downloadedCount = stats.downloadedCount,
-                            failures = stats.uploadFailures,
-                            successful = stats.successful
+                    // Add to results in a thread-safe manner
+                    synchronized(results) {
+                        results.add(
+                            EntitySyncResult(
+                                entityName = entityName,
+                                uploadedCount = stats.uploadedCount,
+                                downloadedCount = stats.downloadedCount,
+                                failures = stats.uploadFailures,
+                                successful = stats.successful
+                            )
                         )
-                    )
+                    }
                     Log.d(TAG, "Successfully synced $entityName")
                 },
                 onFailure = { error ->
-                    results.add(
-                        EntitySyncResult(
-                            entityName = entityName,
-                            error = error.message
+                    synchronized(results) {
+                        results.add(
+                            EntitySyncResult(
+                                entityName = entityName,
+                                error = error.message
+                            )
                         )
-                    )
+                    }
                     Log.e(TAG, "Failed to sync $entityName: ${error.message}")
                 }
             )
         } catch (e: Exception) {
             Log.e(TAG, "Error syncing $entityName", e)
-            results.add(
-                EntitySyncResult(
-                    entityName = entityName,
-                    error = e.message
+            synchronized(results) {
+                results.add(
+                    EntitySyncResult(
+                        entityName = entityName,
+                        error = e.message
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -171,18 +182,18 @@ class SyncManager(private val context: Context) {
         var overallError: String? = null
 
         try {
-            Log.d(TAG, "Starting full sync for ${repositories.size} repositories")
+            Log.d(TAG, "Starting SERIAL full sync for ${repositories.size} repositories")
 
+            // Using a standard forEach loop for one-by-one execution
             repositories.forEach { (entityName, repository) ->
                 syncRepository(entityName, repository, results)
             }
 
-            Log.d(TAG, "Full sync completed")
+            Log.d(TAG, "SERIAL full sync completed")
         } catch (e: Exception) {
-            Log.e(TAG, "Error during full sync", e)
+            Log.e(TAG, "Error during serial full sync", e)
             overallError = e.message
         }
 
         SyncResult(results, overallError)
-    }
-}
+    }}
