@@ -1,20 +1,31 @@
 package com.example.farmdatapod.network
 
-import com.example.farmdatapod.utils.TokenManager // Changed import to TokenManager
+import android.util.Log
+import com.example.farmdatapod.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 
-// AuthInterceptor now depends on TokenManager for token access and validation
+/**
+ * A simple interceptor that attaches an Authorization token to a request.
+ * It assumes the token is valid, as the decision to use this interceptor
+ * means the call requires authentication.
+ */
 class AuthInterceptor(private val tokenManager: TokenManager) : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response { //
-        val originalRequest = chain.request() //
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val token = tokenManager.getToken()
 
-        // Get token from the TokenManager, which handles validity checks
-        val token = tokenManager.getToken() // Now correctly using TokenManager's getToken()
-        val newRequest = originalRequest.newBuilder()
-            .header("Authorization", "Bearer $token") //
-            .build() //
+        // If the token is missing for a call that is supposed to be authenticated,
+        // log a critical error. The request will likely fail on the server with 401/403.
+        if (token.isNullOrEmpty()) {
+            Log.e("AuthInterceptor", "CRITICAL: Request to ${chain.request().url} requires a token, but none was found.")
+            // Proceed with the request, allowing the server to reject it.
+            return chain.proceed(chain.request())
+        }
 
-        return chain.proceed(newRequest) //
+        val authenticatedRequest = chain.request().newBuilder()
+            .header("Authorization", "Bearer $token")
+            .build()
+
+        return chain.proceed(authenticatedRequest)
     }
 }

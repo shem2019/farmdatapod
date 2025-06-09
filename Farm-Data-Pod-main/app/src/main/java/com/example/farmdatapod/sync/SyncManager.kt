@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.farmdatapod.cropmanagement.cropManagementActivities.data.CropManagementActivityRepository
@@ -40,25 +42,21 @@ import com.example.farmdatapod.season.planting.data.PlanPlantingRepository
 import com.example.farmdatapod.season.register.registerSeasonData.SeasonRepository
 import com.example.farmdatapod.season.scouting.data.BaitRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async // Added
-import kotlinx.coroutines.awaitAll // Added
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
-import java.util.Collections // Added for synchronized list
 
 class SyncManager(private val context: Context) {
     private val TAG = "SyncManager"
     private val workManager = WorkManager.getInstance(context)
 
-
     // List of all repositories that need syncing
+    // CORRECTED: Removed the duplicate "hub" entry
     private val repositories = listOf<Pair<String, SyncableRepository>>(
         "Seasons" to SeasonRepository(context),
         "YieldForecasts" to YieldForecastRepository(context),
         "Germinations" to GerminationRepository(context),
         "Baits" to BaitRepository(context),
         "planting" to PlanPlantingRepository(context),
-        "hub" to HubRepository(context),
         "hub" to HubRepository(context),
         "buying_centers" to BuyingCenterRepository(context),
         "CIGs" to CIGRepository(context),
@@ -74,7 +72,7 @@ class SyncManager(private val context: Context) {
         "Land Preparation Management" to LandPreparationManagementRepository(context),
         "Germination Management" to GerminationManagementRepository(context),
         "Yield Forecast Management" to YieldForecastManagementRepository(context),
-        "Crop Management Activity" to CropManagementActivityRepository(context), // Changed name for clarity if there are two "Crop Management"
+        "Crop Management Activity" to CropManagementActivityRepository(context),
         "Crop Nutrition Management" to CropNutritionManagementRepository(context),
         "Crop Protection Management" to CropProtectionManagementRepository(context),
         "Harvest Management" to HarvestManagementRepository(context),
@@ -86,59 +84,101 @@ class SyncManager(private val context: Context) {
         "Input Transfer" to InputTransferRepository(context),
         "Equipment Loading" to EquipmentLoadingRepository(context),
         "Loading Input" to LoadingInputRepository(context)
-
-        // Add other repositories here as needed:
-        // "Nursery" to NurseryRepository(context),
-        // "LandPrep" to LandPreparationRepository(context),
-        // etc.
     )
 
     companion object {
-        private const val AUTO_SYNC_WORK = "auto_sync_work"
+        private const val PERIODIC_SYNC_WORK_NAME = "periodic_sync_work"
+        private const val IMMEDIATE_SYNC_WORK_NAME = "immediate_sync_work"
     }
 
+    /**
+     * Schedules a background sync to run periodically (e.g., every 15 mins)
+     * when the network is available. This is a reliable fallback.
+     */
     fun setupPeriodicSync() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val autoSyncRequest = PeriodicWorkRequestBuilder<AutoSyncWorker>(
-            15, TimeUnit.MINUTES,
-            5, TimeUnit.MINUTES
-        )
+        val periodicSyncRequest = PeriodicWorkRequestBuilder<AutoSyncWorker>(15, TimeUnit.MINUTES)
             .setConstraints(constraints)
             .build()
 
         workManager.enqueueUniquePeriodicWork(
-            AUTO_SYNC_WORK,
-            ExistingPeriodicWorkPolicy.UPDATE,
-            autoSyncRequest
+            PERIODIC_SYNC_WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP, // Use KEEP to prevent the timer from resetting on every app start
+            periodicSyncRequest
         )
-
-        Log.d(TAG, "Periodic sync scheduled")
+        Log.i(TAG, "Periodic background sync worker has been scheduled.")
     }
 
+    /**
+     * The new utility to trigger an immediate sync.
+     * This schedules a one-time job that runs as soon as network is available.
+     * Call this function right after saving new data locally (e.g., from your ViewModel).
+     */
+    fun triggerImmediateSync() {
+        Log.i(TAG, "An immediate sync has been requested.")
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val immediateSyncRequest = OneTimeWorkRequestBuilder<AutoSyncWorker>()
+            .setConstraints(constraints)
+            .build()
+
+        // Enqueue the work as unique. If another immediate sync is already pending,
+        // this new one will replace it, preventing a pile-up of sync requests.
+        workManager.enqueueUniqueWork(
+            IMMEDIATE_SYNC_WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            immediateSyncRequest
+        )
+        Log.d(TAG, "Immediate sync job enqueued. WorkManager will run it once network constraints are met.")
+    }
+
+    /**
+     * Cancels all scheduled sync jobs. Call this on user logout.
+     */
     fun cancelAllSync() {
-        workManager.cancelUniqueWork(AUTO_SYNC_WORK)
-        Log.d(TAG, "All sync cancelled")
+        workManager.cancelUniqueWork(PERIODIC_SYNC_WORK_NAME)
+        workManager.cancelUniqueWork(IMMEDIATE_SYNC_WORK_NAME)
+        Log.w(TAG, "All periodic and immediate sync jobs have been cancelled.")
     }
 
-    suspend fun syncNow(): SyncResult {
-        Log.d(TAG, "Starting immediate sync")
-        return performFullSync()
+    /**
+     * Performs a direct, blocking sync. Called by the AutoSyncWorker.
+     */
+    suspend fun performFullSync(): SyncResult = withContext(Dispatchers.IO) {
+        val results = mutableListOf<EntitySyncResult>()
+        var overallError: String? = null
+
+        try {
+            Log.i(TAG, "========= Starting Full Sync Process (Serial Execution) =========")
+            repositories.forEach { (entityName, repository) ->
+                Log.d(TAG, "--- Now syncing: $entityName ---")
+                syncRepository(entityName, repository, results)
+            }
+            Log.i(TAG, "========= SERIAL full sync process completed. ==========")
+        } catch (e: Exception) {
+            Log.e(TAG, "A critical error occurred during the full sync process.", e)
+            overallError = e.message
+        }
+        SyncResult(results, overallError)
     }
 
-    // syncRepository remains the same but will be called concurrently
+    /**
+     * Helper function to sync a single repository and record the outcome.
+     */
     private suspend fun syncRepository(
         entityName: String,
         repository: SyncableRepository,
-        results: MutableList<EntitySyncResult> // This list needs to be thread-safe if accessed concurrently
+        results: MutableList<EntitySyncResult>
     ) {
         try {
-            Log.d(TAG, "Starting sync for $entityName")
+            Log.d(TAG, "Calling performFullSync() for $entityName repository.")
             repository.performFullSync().fold(
                 onSuccess = { stats ->
-                    // Add to results in a thread-safe manner
                     synchronized(results) {
                         results.add(
                             EntitySyncResult(
@@ -150,50 +190,30 @@ class SyncManager(private val context: Context) {
                             )
                         )
                     }
-                    Log.d(TAG, "Successfully synced $entityName")
+                    if (!stats.successful) {
+                        Log.w(TAG, "Sync for $entityName completed with failures. Uploaded: ${stats.uploadedCount}, Failed: ${stats.uploadFailures}")
+                    } else {
+                        Log.d(TAG, "Successfully synced $entityName. Uploaded: ${stats.uploadedCount}, Downloaded: ${stats.downloadedCount}")
+                    }
                 },
                 onFailure = { error ->
                     synchronized(results) {
-                        results.add(
-                            EntitySyncResult(
-                                entityName = entityName,
-                                error = error.message
-                            )
-                        )
+                        results.add(EntitySyncResult(entityName = entityName, error = error.message))
                     }
-                    Log.e(TAG, "Failed to sync $entityName: ${error.message}")
+                    Log.e(TAG, "Failed to sync $entityName: ${error.message}", error)
                 }
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Error syncing $entityName", e)
+            Log.e(TAG, "An exception occurred while syncing $entityName", e)
             synchronized(results) {
-                results.add(
-                    EntitySyncResult(
-                        entityName = entityName,
-                        error = e.message
-                    )
-                )
+                results.add(EntitySyncResult(entityName = entityName, error = e.message))
             }
         }
     }
 
-    suspend fun performFullSync(): SyncResult = withContext(Dispatchers.IO) {
-        val results = mutableListOf<EntitySyncResult>()
-        var overallError: String? = null
-
-        try {
-            Log.d(TAG, "Starting SERIAL full sync for ${repositories.size} repositories")
-
-            // Using a standard forEach loop for one-by-one execution
-            repositories.forEach { (entityName, repository) ->
-                syncRepository(entityName, repository, results)
-            }
-
-            Log.d(TAG, "SERIAL full sync completed")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error during serial full sync", e)
-            overallError = e.message
-        }
-
-        SyncResult(results, overallError)
-    }}
+    // The suspend fun syncNow() is fine as it is, it's just a wrapper for performFullSync
+    suspend fun syncNow(): SyncResult {
+        Log.d(TAG, "Starting immediate on-demand sync via syncNow()")
+        return performFullSync()
+    }
+}
