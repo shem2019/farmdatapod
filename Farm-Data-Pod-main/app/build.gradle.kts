@@ -9,10 +9,16 @@ plugins {
 android {
     namespace = "com.example.farmdatapod"
     compileSdk = 34
+    packagingOptions {
+        exclude("META-INF/services/javax.xml.stream.XMLEventFactory")
+        exclude("META-INF/services/javax.xml.stream.XMLInputFactory")
+        exclude("META-INF/services/javax.xml.stream.XMLOutputFactory")
+        exclude("META-INF/DEPENDENCIES")
 
+    }
     defaultConfig {
         applicationId = "com.example.farmdatapod"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -41,12 +47,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
+
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 }
 
@@ -58,6 +66,8 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.annotation)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.livedata.ktx)
@@ -99,7 +109,6 @@ dependencies {
 
     // UI Components
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    implementation(libs.jxl)
     //Time
     implementation("com.google.android.material:material:1.12.0")
 
@@ -108,4 +117,13 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    //excel
+    // Add these lines for Apache POI
+    implementation("org.apache.poi:poi:5.2.5")
+    implementation("org.apache.poi:poi-ooxml:5.2.5")
+// These are required dependencies for POI on Android
+    implementation("org.apache.xmlbeans:xmlbeans:5.2.0")
+    implementation("org.apache.commons:commons-compress:1.26.1")
+    implementation("org.apache.commons:commons-collections4:4.4")
+    implementation("com.github.virtuald:curvesapi:1.08")
 }
