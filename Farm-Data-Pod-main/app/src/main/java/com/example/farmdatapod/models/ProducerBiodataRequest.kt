@@ -5,10 +5,10 @@ data class ProducerBiodataRequest(
     val other_name: String?,
     val last_name: String?,
     val farmer_code: String?,
+    val id_number: String?,
     val date_of_birth: String?,
     val email: String?,
     val phone_number: String?,
-    val id_number: String?,
     val location: String?,
     val hub: String?,
     val buying_center: String?,
@@ -24,8 +24,8 @@ data class ProducerBiodataRequest(
     val homestead_size: String?,
     val uncultivated_land_size: String?,
     val farm_accessibility: String?,
-    val number_of_family_workers: Int?,
-    val number_of_hired_workers: Int?,
+    val number_of_family_workers: String?,
+    val number_of_hired_workers: String?,
     val farmer_interest_in_extension: String?,
     val access_to_irrigation: String?,
     val crop_list: String?,
@@ -66,6 +66,10 @@ data class ProducerBiodataRequest(
     val transportation_type: String? = "Truck",
     val toilet_floor: String? = "Concrete",
     val commercialProduces: List<Map<String, Any?>>?,
-    val domesticProduces: List<Map<String, Any?>>?
+    val domesticProduces: List<Map<String, Any?>>?,
+    val bank_name: String?, // Added
+    val bank_account_number: String?, // Added
+    val bank_account_holder: String?, // Added
+    val mobile_money_provider: String?, // Added
+    val mobile_money_number: String? // Added
 )
-

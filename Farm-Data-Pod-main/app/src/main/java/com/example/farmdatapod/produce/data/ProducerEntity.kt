@@ -208,6 +208,22 @@ data class ProducerEntity(
     @ColumnInfo(name = "toilet_floor")
     val toiletFloor: String?,
 
+    // NEW FINANCIAL FIELDS (added based on user's request format)
+    @ColumnInfo(name = "bank_name")
+    val bankName: String?,
+
+    @ColumnInfo(name = "bank_account_number")
+    val bankAccountNumber: String?,
+
+    @ColumnInfo(name = "bank_account_holder")
+    val bankAccountHolder: String?,
+
+    @ColumnInfo(name = "mobile_money_provider")
+    val mobileMoneyProvider: String?,
+
+    @ColumnInfo(name = "mobile_money_number")
+    val mobileMoneyNumber: String?,
+
     // System fields
     @ColumnInfo(name = "user_id")
     val userId: String,
@@ -233,5 +249,3 @@ data class ProducerEntity(
     @ColumnInfo(name = "buying_center_id")
     val buyingCenterId: Int? = null
 )
-
-

@@ -1,4 +1,3 @@
-
 package com.example.farmdatapod.produce.data
 
 
@@ -55,6 +54,9 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
 
                         if (response.isSuccessful) {
                             response.body()?.let { serverProducer ->
+                                // Note: The response for postProducerBiodata is currently Call<Unit>, meaning no body is returned.
+                                // If the API actually returns the server ID, you would parse it here.
+                                // For now, we'll assume success means it's synced.
                                 producerDao.updateSyncStatus(localId, true)
                                 Log.d(TAG, "Producer synced successfully with server ")
                             }
@@ -89,11 +91,11 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                     val response = apiService.postProducerBiodata(producerRequest).execute()
 
                     if (response.isSuccessful) {
-                        response.body()?.let {
-                            producer.serverId?.let { it1 -> producerDao.updateSyncStatus(it1, true) }
-                            successCount++
-                            Log.d(TAG, "Successfully synced ${producer.otherName}")
-                        }
+                        // Assuming postProducerBiodata doesn't return the server ID for now.
+                        // If it did, you'd update producer.serverId here.
+                        producerDao.updateSyncStatus(producer.id.toLong(), true) // Use producer.id for local ID
+                        successCount++
+                        Log.d(TAG, "Successfully synced ${producer.otherName}")
                     } else {
                         failureCount++
                         Log.e(TAG, "Failed to sync ${producer.otherName}: ${response.errorBody()?.string()}")
@@ -175,8 +177,8 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                                                 producerDao.updateProducer(localProducer.copy(
                                                     id = existingProducer.id,
                                                     syncStatus = true,
-                                                    userId = existingProducer.userId,
-                                                    producerType = existingProducer.producerType
+                                                    userId = existingProducer.userId, // Preserve local userId
+                                                    producerType = existingProducer.producerType // Preserve local producerType
                                                 ))
                                             }
                                             Log.d(TAG, "Updated producer: FarmerCode=${serverProducer.farmer_code}")
@@ -230,7 +232,12 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                 existing.ward != new.ward ||
                 existing.village != new.village ||
                 existing.cropList != new.cropList ||
-                existing.accessToIrrigation != new.accessToIrrigation
+                existing.accessToIrrigation != new.accessToIrrigation ||
+                existing.bankName != new.bankName || // Added
+                existing.bankAccountNumber != new.bankAccountNumber || // Added
+                existing.bankAccountHolder != new.bankAccountHolder || // Added
+                existing.mobileMoneyProvider != new.mobileMoneyProvider || // Added
+                existing.mobileMoneyNumber != new.mobileMoneyNumber // Added
     }
 
     private fun convertToLocalProducer(serverProducer: ProducerBiodataRequest): ProducerEntity {
@@ -239,7 +246,7 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             otherName = serverProducer.other_name ?: "",
             lastName = serverProducer.last_name ?: "",
             idNumber = serverProducer.id_number ?: "",
-            farmerCode = serverProducer.farmer_code ?: "",  // Important for duplicate checking
+            farmerCode = serverProducer.farmer_code ?: "",
             email = serverProducer.email,
             phoneNumber = serverProducer.phone_number ?: "",
             location = serverProducer.location ?: "",
@@ -260,8 +267,8 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             cropList = serverProducer.crop_list ?: "",
             accessToIrrigation = serverProducer.access_to_irrigation ?: "",
             extensionServices = serverProducer.farmer_interest_in_extension ?: "",
-            familyLabor = serverProducer.number_of_family_workers ?: 0,
-            hiredLabor = serverProducer.number_of_hired_workers ?: 0,
+            familyLabor = serverProducer.number_of_family_workers?.toIntOrNull() ?: 0,
+            hiredLabor = serverProducer.number_of_hired_workers?.toIntOrNull() ?: 0,
             dairyCattle = serverProducer.dairy_cattle?.toIntOrNull() ?: 0,
             beefCattle = serverProducer.beef_cattle?.toIntOrNull() ?: 0,
             sheep = serverProducer.sheep?.toIntOrNull() ?: 0,
@@ -315,7 +322,12 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                     unit = it["product_category"] as? String ?: "",
                     quantity = it["acerage"] as? String ?: ""
                 )
-            }
+            },
+            bankName = serverProducer.bank_name, // Added
+            bankAccountNumber = serverProducer.bank_account_number, // Added
+            bankAccountHolder = serverProducer.bank_account_holder, // Added
+            mobileMoneyProvider = serverProducer.mobile_money_provider, // Added
+            mobileMoneyNumber = serverProducer.mobile_money_number // Added
         )
     }
 
@@ -324,11 +336,11 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             id = producer.serverId,
             other_name = producer.otherName,
             last_name = producer.lastName,
-            id_number = producer.idNumber,              // Remove ?.toIntOrNull()
-            farmer_code = producer.farmerCode,  // Important for duplicate checking
+            id_number = producer.idNumber,
+            farmer_code = producer.farmerCode,
             date_of_birth = producer.dateOfBirth,
             email = producer.email,
-            phone_number = producer.phoneNumber,         // Remove ?.toIntOrNull()
+            phone_number = producer.phoneNumber,
             location = producer.location,
             hub = producer.hub,
             buying_center = producer.buyingCenter,
@@ -344,8 +356,8 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             homestead_size = producer.homesteadSize.toString(),
             uncultivated_land_size = producer.uncultivatedLandSize.toString(),
             farm_accessibility = producer.farmAccessibility,
-            number_of_family_workers = producer.familyLabor,
-            number_of_hired_workers = producer.hiredLabor,
+            number_of_family_workers = producer.familyLabor.toString(),
+            number_of_hired_workers = producer.hiredLabor.toString(),
             farmer_interest_in_extension = producer.extensionServices,
             access_to_irrigation = producer.accessToIrrigation,
             crop_list = producer.cropList,
@@ -398,7 +410,12 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                     "product_category" to it.unit,
                     "acerage" to it.quantity
                 )
-            } ?: emptyList()
+            } ?: emptyList(),
+            bank_name = producer.bankName, // Added
+            bank_account_number = producer.bankAccountNumber, // Added
+            bank_account_holder = producer.bankAccountHolder, // Added
+            mobile_money_provider = producer.mobileMoneyProvider, // Added
+            mobile_money_number = producer.mobileMoneyNumber // Added
         )
     }
 

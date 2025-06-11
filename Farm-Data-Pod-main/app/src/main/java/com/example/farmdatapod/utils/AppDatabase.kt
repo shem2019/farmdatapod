@@ -129,7 +129,7 @@ import com.example.farmdatapod.season.scouting.data.BaitScoutingEntity
 
 
     ],
-    version = 47,
+    version = 47, // Incremented version to 47
     exportSchema = false
 )
 @TypeConverters(

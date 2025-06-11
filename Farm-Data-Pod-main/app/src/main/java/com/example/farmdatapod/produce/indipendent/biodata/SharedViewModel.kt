@@ -410,12 +410,52 @@ class SharedViewModel : ViewModel() {
         _marketProduceList.value = _marketProduceList.value
         _ownConsumptionList.value = _ownConsumptionList.value
     }
+
     private lateinit var producerRepository: ProducerRepository
+
+    // NEW: LiveData for financial fields
+    private val _bankName = MutableLiveData<String?>()
+    val bankName: LiveData<String?> = _bankName
+
+    private val _bankAccountNumber = MutableLiveData<String?>()
+    val bankAccountNumber: LiveData<String?> = _bankAccountNumber
+
+    private val _bankAccountHolder = MutableLiveData<String?>()
+    val bankAccountHolder: LiveData<String?> = _bankAccountHolder
+
+    private val _mobileMoneyProvider = MutableLiveData<String?>()
+    val mobileMoneyProvider: LiveData<String?> = _mobileMoneyProvider
+
+    private val _mobileMoneyNumber = MutableLiveData<String?>()
+    val mobileMoneyNumber: LiveData<String?> = _mobileMoneyNumber
+
+    // NEW: Setter functions for financial fields
+    fun setBankName(name: String?) {
+        _bankName.value = name
+    }
+
+    fun setBankAccountNumber(number: String?) {
+        _bankAccountNumber.value = number
+    }
+
+    fun setBankAccountHolder(holder: String?) {
+        _bankAccountHolder.value = holder
+    }
+
+    fun setMobileMoneyProvider(provider: String?) {
+        _mobileMoneyProvider.value = provider
+    }
+
+    fun setMobileMoneyNumber(number: String?) {
+        _mobileMoneyNumber.value = number
+    }
+
 
     // Add repository initialization
     fun initRepository(context: Context) {
         producerRepository = ProducerRepository(context)
     }
+
     fun submitProducerData(context: Context, producerType: String) {
         viewModelScope.launch {
             try {
@@ -488,7 +528,13 @@ class SharedViewModel : ViewModel() {
                     producerType = producerType,
                     primaryProducer = _primaryProducer.value,
                     marketProduceList = _marketProduceList.value?.toList(),
-                    ownConsumptionList = _ownConsumptionList.value?.toList()
+                    ownConsumptionList = _ownConsumptionList.value?.toList(),
+                    // NEW: Pass values for financial fields
+                    bankName = _bankName.value,
+                    bankAccountNumber = _bankAccountNumber.value,
+                    bankAccountHolder = _bankAccountHolder.value,
+                    mobileMoneyProvider = _mobileMoneyProvider.value,
+                    mobileMoneyNumber = _mobileMoneyNumber.value
                 )
 
                 producerRepository.saveProducer(producer, isOnline).fold(
@@ -539,6 +585,7 @@ class SharedViewModel : ViewModel() {
             )
         }
     }
+
     private fun clearForm() {
         _otherName.value = ""
         _lastName.value = ""
@@ -591,8 +638,11 @@ class SharedViewModel : ViewModel() {
         _primaryProducer.value = null
         _livestockData.value = null
         clearProduceLists()
+        // NEW: Clear financial fields
+        _bankName.value = null
+        _bankAccountNumber.value = null
+        _bankAccountHolder.value = null
+        _mobileMoneyProvider.value = null
+        _mobileMoneyNumber.value = null
     }
-
 }
-
-
