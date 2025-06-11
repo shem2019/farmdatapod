@@ -10,12 +10,11 @@ data class CIG(
     val id: Int = 0,
 
     @ColumnInfo(name = "server_id")
-    var serverId: Int? = null, // Made 'var' to be updatable after sync
+    var serverId: Int? = null,
 
     @ColumnInfo(name = "cig_name")
     val cigName: String,
 
-    @ColumnInfo(name = "hub")
     val hub: String,
 
     @ColumnInfo(name = "no_of_members")
@@ -24,29 +23,21 @@ data class CIG(
     @ColumnInfo(name = "date_established")
     val dateEstablished: String,
 
-    @ColumnInfo(name = "constitution")
-    val constitution: String?, // This will store the URL or "No"
-
-    @ColumnInfo(name = "registration")
-    val registration: String?, // This will store the URL or "No"
-
-    @ColumnInfo(name = "certificate")
-    val certificate: String?, // This will store the URL or "No"
-
-    @ColumnInfo(name = "membership_register") // This matches the API field name
+    val constitution: String?,
+    val registration: String?,
+    val certificate: String?,
+    @ColumnInfo(name = "membership_register")
     val membershipRegister: String,
-
     @ColumnInfo(name = "elections_held")
-    val electionsHeld: String?, // This will store the URL or "No"
-
+    val electionsHeld: String?,
     @ColumnInfo(name = "date_of_last_elections")
     val dateOfLastElections: String,
-
     @ColumnInfo(name = "meeting_venue")
     val meetingVenue: String,
 
-    @ColumnInfo(name = "frequency")
-    val frequency: String,
+    // Renamed to match API for consistency
+    @ColumnInfo(name = "meeting_frequency")
+    val meetingFrequency: String,
 
     @ColumnInfo(name = "scheduled_meeting_day")
     val scheduledMeetingDay: String,
@@ -54,14 +45,19 @@ data class CIG(
     @ColumnInfo(name = "scheduled_meeting_time")
     val scheduledMeetingTime: String,
 
+    // Added new fields required by the API
+    @ColumnInfo(name = "membership_contribution_amount")
+    val membershipContributionAmount: String,
+
+    @ColumnInfo(name = "membership_contribution_frequency")
+    val membershipContributionFrequency: String,
+
     @ColumnInfo(name = "user_id")
     val userId: String?,
 
     @ColumnInfo(name = "sync_status")
-    var syncStatus: Boolean = false, // Made 'var' to be updatable
+    var syncStatus: Boolean = false,
 
-    // THIS IS THE KEY CHANGE:
-    // We will store the entire list of members as a single JSON string.
     @ColumnInfo(name = "members_json")
-    val membersJson: String? = null
+    val membersJson: String?
 )

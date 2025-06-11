@@ -100,6 +100,8 @@ dependencies {
     // UI Components
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
     implementation(libs.jxl)
+    //Time
+    implementation("com.google.android.material:material:1.12.0")
 
     // Testing
     testImplementation(libs.junit)

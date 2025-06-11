@@ -23,12 +23,16 @@ class CIGRepository(private val context: Context) : SyncableRepository {
     private val cigDao = AppDatabase.getInstance(context).cigDao()
 
     // THIS IS THE FIX:
-    // We now call the getApiService method that only takes 'context',
-    // exactly as it is defined in your RestClient.kt file.
+    // The repository now creates its own ApiService instance using the existing RestClient.
+    // This matches the pattern of your other repositories and requires NO changes
+    // to FarmDataPodApplication.kt.
     private val apiService: ApiService = RestClient.getApiService(context)
 
     private val gson = Gson()
 
+    /**
+     * Saves a CIG entity to the local Room database.
+     */
     suspend fun saveCIGLocally(cig: CIG): Result<Long> = withContext(Dispatchers.IO) {
         try {
             val localId = cigDao.insertCIG(cig.copy(syncStatus = false))
@@ -39,22 +43,18 @@ class CIGRepository(private val context: Context) : SyncableRepository {
         }
     }
 
-    suspend fun syncSingleCigById(localId: Int): Result<CIGServerResponse> {
-        val localCig = cigDao.getCIGById(localId).first()
-        if (localCig == null) {
-            return Result.failure(Exception("Could not find locally saved CIG with ID $localId to sync."))
-        }
-
-        val request = createApiRequestFromEntity(localCig)
-
+    /**
+     * Pushes a single CIG to the server and updates its sync status on success.
+     */
+    private suspend fun syncCigToServer(request: CIGCreateRequest, localId: Int): Result<CIGServerResponse?> {
         val jsonRequest = gson.toJson(request)
-        Log.d(TAG, "--> Attempting to sync CIG (Local ID: $localId). Sending JSON:\n$jsonRequest")
+        Log.d(TAG, "--> Syncing CIG (Local ID: $localId). Sending JSON:\n$jsonRequest")
 
         return try {
             val response = apiService.registerCIG(request)
             if (response.isSuccessful && response.body() != null) {
                 val serverResponse = response.body()!!
-                Log.i(TAG, "<-- SUCCESS: Synced CIG (Local ID: $localId). Server gave back ID: ${serverResponse.id}")
+                Log.i(TAG, "<-- SUCCESS: Synced CIG (Local ID: $localId). Server ID: ${serverResponse.id}")
                 cigDao.updateSyncStatus(localId, serverResponse.id)
                 Result.success(serverResponse)
             } else {
@@ -63,25 +63,38 @@ class CIGRepository(private val context: Context) : SyncableRepository {
                 Result.failure(Exception(errorMsg))
             }
         } catch (e: Exception) {
-            Log.e(TAG, "<-- FAILURE: Exception while syncing CIG (Local ID: $localId)", e)
+            Log.e(TAG, "<-- EXCEPTION while syncing CIG (Local ID: $localId)", e)
             Result.failure(e)
         }
     }
 
+    /**
+     * The main sync function called by SyncManager. It finds all unsynced CIGs
+     * and attempts to push each one to the server.
+     */
     override suspend fun syncUnsynced(): Result<SyncStats> = withContext(Dispatchers.IO) {
         val unsyncedCIGs = cigDao.getUnsyncedCIGs().first()
         if (unsyncedCIGs.isEmpty()) {
             return@withContext Result.success(SyncStats(0, 0, 0, true))
         }
+
+        Log.i(TAG, "Background Sync: Found ${unsyncedCIGs.size} unsynced CIG(s).")
         var successCount = 0
         var failureCount = 0
+
         for (localCig in unsyncedCIGs) {
-            val result = syncSingleCigById(localCig.id)
+            val request = createApiRequestFromEntity(localCig)
+            val result = syncCigToServer(request, localCig.id)
             if (result.isSuccess) successCount++ else failureCount++
         }
+
+        Log.i(TAG, "CIG sync job finished. Success: $successCount, Failures: $failureCount")
         Result.success(SyncStats(successCount, failureCount, 0, failureCount == 0))
     }
 
+    /**
+     * Helper function to build the correct API request object from a local CIG entity.
+     */
     private fun createApiRequestFromEntity(localCig: CIG): CIGCreateRequest {
         val memberList: List<MemberRequest> = localCig.membersJson?.let { json ->
             val type = object : TypeToken<List<MemberRequest>>() {}.type
@@ -94,12 +107,21 @@ class CIGRepository(private val context: Context) : SyncableRepository {
             registration = localCig.registration ?: "No", certificate = localCig.certificate ?: "No",
             membershipRegister = localCig.membershipRegister, electionsHeld = localCig.electionsHeld ?: "No",
             dateOfLastElections = localCig.dateOfLastElections, meetingVenue = localCig.meetingVenue,
-            frequency = localCig.frequency, scheduledMeetingDay = localCig.scheduledMeetingDay,
-            scheduledMeetingTime = localCig.scheduledMeetingTime, members = memberList
+            meetingFrequency = localCig.meetingFrequency,
+            scheduledMeetingDay = localCig.scheduledMeetingDay,
+            scheduledMeetingTime = localCig.scheduledMeetingTime,
+            membershipContributionAmount = localCig.membershipContributionAmount,
+            membershipContributionFrequency = localCig.membershipContributionFrequency,
+            members = memberList
         )
     }
 
     override suspend fun performFullSync(): Result<SyncStats> = syncUnsynced()
-    override suspend fun syncFromServer(): Result<Int> = Result.success(0)
+
+    override suspend fun syncFromServer(): Result<Int> {
+        Log.w(TAG, "syncFromServer for CIGs is not yet implemented.")
+        return Result.success(0)
+    }
+
     fun getAllCIGs(): Flow<List<CIG>> = cigDao.getAllCIGs().flowOn(Dispatchers.IO)
 }

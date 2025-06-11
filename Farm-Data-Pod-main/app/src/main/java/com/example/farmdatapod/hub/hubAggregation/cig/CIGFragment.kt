@@ -1,8 +1,6 @@
 package com.example.farmdatapod.hub.hubAggregation.cig
 
 import android.app.Activity
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -25,14 +23,13 @@ import com.example.farmdatapod.FarmDataPodApplication
 import com.example.farmdatapod.R
 import com.example.farmdatapod.databinding.FragmentCigBinding
 import com.example.farmdatapod.hub.hubAggregation.cig.data.CIG
-import com.example.farmdatapod.hub.hubAggregation.cig.data.CIGViewModel
-import com.example.farmdatapod.hub.hubAggregation.cig.data.RegistrationState
 import com.example.farmdatapod.hub.hubRegistration.data.HubRepository
 import com.example.farmdatapod.models.MemberRequest
 import com.example.farmdatapod.models.UploadResponse
 import com.example.farmdatapod.network.RestClient
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import jxl.Workbook
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -59,8 +56,8 @@ class CIGFragment : Fragment() {
     private lateinit var hubRepository: HubRepository
     private lateinit var filePickerLauncher: ActivityResultLauncher<Intent>
 
-    // State variables to hold form data
-    private var membersFromExcel: List<MemberRequest> = emptyList()
+    // State variables
+    private var membersFromFile: List<MemberRequest> = emptyList()
     private var constitutionUrl: String? = null
     private var registrationUrl: String? = null
     private var certificateUrl: String? = null
@@ -70,15 +67,13 @@ class CIGFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Use modern ActivityResultLauncher for all file picking
         filePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.data?.also { uri ->
                     Log.d(TAG, "File selected with URI: $uri")
                     when (currentUploadType) {
-                        "excel" -> processExcelFile(uri)
+                        "excel" -> processMemberFile(uri)
                         "constitution", "registration", "elections", "certificate" -> uploadImageToCloudinary(uri)
-                        else -> Log.w(TAG, "Unknown file upload type: $currentUploadType")
                     }
                 }
             } else {
@@ -101,7 +96,6 @@ class CIGFragment : Fragment() {
     }
 
     private fun setupUI() {
-        // Populate Hub Spinner
         lifecycleScope.launch {
             hubRepository.getAllHubs().collect { hubs ->
                 val hubNames = hubs.map { it.hubName }
@@ -110,14 +104,11 @@ class CIGFragment : Fragment() {
             }
         }
 
-        // Populate Frequency Spinner
-        val frequencyOptions = listOf("Weekly", "Bi-Weekly", "Monthly")
-        val frequencyAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, frequencyOptions)
-        binding.inputCigFrequency.setAdapter(frequencyAdapter)
+        binding.inputCigFrequency.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOf("Weekly", "Bi-Weekly", "Monthly")))
+        binding.spinnerContributionFrequency.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, listOf("Daily", "Weekly", "Monthly", "Annually")))
 
-        // Setup click listeners
-        binding.cigYearEst.setOnClickListener { showDatePickerDialog(it as EditText) }
-        binding.cigLastElectionDate.setOnClickListener { showDatePickerDialog(it as EditText) }
+        binding.cigYearEst.setOnClickListener { showDatePickerDialog(it as EditText, "Date Established") }
+        binding.cigLastElectionDate.setOnClickListener { showDatePickerDialog(it as EditText, "Date of Last Election") }
         binding.inputScheduledMeetingTime.setOnClickListener { showTimePickerDialog(it as EditText) }
 
         setupFileUploadListeners()
@@ -134,8 +125,7 @@ class CIGFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.registrationState.observe(viewLifecycleOwner) { state ->
-            // Assumes you have a ProgressBar with id 'progressBar' in your fragment_cig.xml
-            //binding.progressBar.isVisible = state is RegistrationState.Loading
+            binding.progressBar.isVisible = state is RegistrationState.Loading
             binding.buttonSave.isEnabled = state !is RegistrationState.Loading
 
             when (state) {
@@ -146,42 +136,41 @@ class CIGFragment : Fragment() {
                 is RegistrationState.Error -> {
                     Toast.makeText(requireContext(), "Error: ${state.errorMessage}", Toast.LENGTH_LONG).show()
                 }
-                is RegistrationState.Idle, is RegistrationState.Loading -> {}
+                else -> {}
             }
         }
     }
 
     private fun setupFileUploadListeners() {
-        // Constitution
         binding.radioGroupConstitution.setOnCheckedChangeListener { _, id ->
-            val showUpload = (id == R.id.radio_constitution_yes)
-            binding.uploadConstitution.visibility = if(showUpload) View.VISIBLE else View.GONE
-            binding.uploadConstitutionText.visibility = if(showUpload) View.VISIBLE else View.GONE
+            binding.uploadConstitution.isVisible = (id == R.id.radio_constitution_yes)
         }
         binding.uploadConstitution.setOnClickListener {
             currentUploadType = "constitution"
             openFilePicker("image/*")
         }
 
-        // Registration
         binding.radioGroupRegistration.setOnCheckedChangeListener { _, id ->
-            val showUpload = (id == R.id.radio_registration_yes)
-            binding.uploadRegistration.visibility = if(showUpload) View.VISIBLE else View.GONE
-            binding.uploadRegistrationText.visibility = if(showUpload) View.VISIBLE else View.GONE
+            binding.uploadRegistration.isVisible = (id == R.id.radio_registration_yes)
         }
         binding.uploadRegistration.setOnClickListener {
             currentUploadType = "registration"
             openFilePicker("image/*")
         }
 
-        // Elections
         binding.radioGroupElectionsHeld.setOnCheckedChangeListener { _, id ->
-            val showUpload = (id == R.id.radio_election_held_yes)
-            binding.uploadElectionsHeld.visibility = if(showUpload) View.VISIBLE else View.GONE
-            binding.uploadElectionsHeldText.visibility = if(showUpload) View.VISIBLE else View.GONE
+            binding.uploadElectionsHeld.isVisible = (id == R.id.radio_election_held_yes)
         }
         binding.uploadElectionsHeld.setOnClickListener {
             currentUploadType = "elections"
+            openFilePicker("image/*")
+        }
+
+        binding.radioGroupCertificate.setOnCheckedChangeListener { _, id ->
+            binding.uploadCertificate.isVisible = (id == R.id.radio_certificate_yes)
+        }
+        binding.uploadCertificate.setOnClickListener {
+            currentUploadType = "certificate"
             openFilePicker("image/*")
         }
     }
@@ -189,7 +178,7 @@ class CIGFragment : Fragment() {
     private fun openFilePicker(vararg mimeTypes: String) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
-            type = if (mimeTypes.size == 1) mimeTypes[0] else "*/*"
+            type = if (mimeTypes.isEmpty()) "*/*" else mimeTypes.joinToString(separator = "|")
             if (mimeTypes.size > 1) {
                 putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
             }
@@ -199,7 +188,7 @@ class CIGFragment : Fragment() {
 
     private fun getFileFromUri(uri: Uri): File? {
         return try {
-            val destinationFile = File(requireContext().cacheDir, "temp_upload_${System.currentTimeMillis()}")
+            val destinationFile = File(requireContext().cacheDir, "upload_${System.currentTimeMillis()}")
             requireContext().contentResolver.openInputStream(uri)?.use { inputStream ->
                 FileOutputStream(destinationFile).use { outputStream ->
                     inputStream.copyTo(outputStream)
@@ -208,13 +197,13 @@ class CIGFragment : Fragment() {
             destinationFile
         } catch (e: Exception) {
             Log.e(TAG, "Failed to create temp file from URI", e)
-            Toast.makeText(requireContext(), "Error accessing the selected file.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Error accessing file.", Toast.LENGTH_SHORT).show()
             null
         }
     }
 
     private fun uploadImageToCloudinary(uri: Uri) {
-        val file = getFileFromUri(uri) ?: return // Exit if file is not created
+        val file = getFileFromUri(uri) ?: return
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
@@ -222,11 +211,13 @@ class CIGFragment : Fragment() {
             "constitution" -> binding.uploadConstitutionText
             "registration" -> binding.uploadRegistrationText
             "elections" -> binding.uploadElectionsHeldText
-            "certificate" -> null // TODO: Add a TextView for certificate in your XML
+            "certificate" -> binding.uploadCertificateText
             else -> null
         }
-        textViewToUpdate?.text = "Uploading, please wait..."
+        textViewToUpdate?.text = "Uploading..."
 
+        // CORRECTED: This call now uses the getApiService method that only takes context,
+        // which matches your existing RestClient.
         RestClient.getApiService(requireContext()).uploadToCloudinary(body).enqueue(object : Callback<UploadResponse> {
             override fun onResponse(call: Call<UploadResponse>, response: Response<UploadResponse>) {
                 file.delete()
@@ -238,57 +229,74 @@ class CIGFragment : Fragment() {
                         "elections" -> electionsHeldUrl = secureUrl
                         "certificate" -> certificateUrl = secureUrl
                     }
-                    textViewToUpdate?.text = "Upload successful"
+                    textViewToUpdate?.text = "File Uploaded"
                 } else {
-                    textViewToUpdate?.text = "Upload failed"
-                    Log.e(TAG, "Cloudinary upload failed: ${response.errorBody()?.string()}")
+                    textViewToUpdate?.text = "Upload Failed"
                 }
             }
             override fun onFailure(call: Call<UploadResponse>, t: Throwable) {
                 file.delete()
-                textViewToUpdate?.text = "Upload failed"
-                Log.e(TAG, "Cloudinary upload exception", t)
+                textViewToUpdate?.text = "Upload Failed"
             }
         })
     }
 
-    private fun processExcelFile(uri: Uri) {
+    private fun processMemberFile(uri: Uri) {
         try {
             val memberMaps = requireContext().contentResolver.openInputStream(uri)?.use { inputStream ->
-                val workbook: Workbook = Workbook.getWorkbook(inputStream)
+                val workbook = Workbook.getWorkbook(inputStream)
                 val sheet = workbook.getSheet(0)
+                // Iterate from row 1 to skip header, map to a map object
                 (1 until sheet.rows).mapNotNull { i ->
                     val row = sheet.getRow(i)
-                    if (row.size < 10 || row[1].contents.isBlank()) null else mapOf(
-                        "other_name" to row[1].contents, "last_name" to row[2].contents,
-                        "gender" to row[3].contents, "date_of_birth" to row[4].contents,
-                        "email" to row[5].contents, "phone_number" to row[6].contents,
-                        "id_number" to row[7].contents, "product_involved" to row[8].contents,
-                        "hectorage_registered_under_cig" to row[9].contents
-                    )
+                    // Check for minimum columns and ensure a key column (like name) is not blank
+                    if (row.size < 16 || row.getOrNull(1)?.contents.isNullOrBlank()) {
+                        null
+                    } else {
+                        mapOf(
+                            "other_name" to row.getOrNull(1)?.contents, "last_name" to row.getOrNull(2)?.contents,
+                            "gender" to row.getOrNull(3)?.contents, "date_of_birth" to row.getOrNull(4)?.contents,
+                            "membership_number" to row.getOrNull(5)?.contents, "registration_date" to row.getOrNull(6)?.contents,
+                            "share_capital" to row.getOrNull(7)?.contents, "contribution" to row.getOrNull(8)?.contents,
+                            "membership_fee" to row.getOrNull(9)?.contents, "phone_number" to row.getOrNull(10)?.contents,
+                            "email" to row.getOrNull(11)?.contents, "voting_rights" to row.getOrNull(12)?.contents,
+                            "position_held" to row.getOrNull(13)?.contents, "membership_category" to row.getOrNull(14)?.contents,
+                            "product_or_service" to row.getOrNull(15)?.contents
+                        )
+                    }
                 }
             } ?: emptyList()
 
-            membersFromExcel = convertMapToMemberRequest(memberMaps)
-            binding.textviewFileChosen.text = "${membersFromExcel.size} members loaded from file."
-            binding.inputNoMembers.setText(membersFromExcel.size.toString())
-            Toast.makeText(context, "${membersFromExcel.size} members successfully loaded.", Toast.LENGTH_SHORT).show()
+            // This line fixes the 'Unresolved reference: memberMaps'
+            membersFromFile = convertMapToMemberRequest(memberMaps)
 
+            binding.textviewFileChosen.text = "${membersFromFile.size} members loaded from file."
+            binding.inputNoMembers.setText(membersFromFile.size.toString())
         } catch (e: Exception) {
-            Toast.makeText(context, "Error reading Excel file: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Error reading .xls file. Please ensure it is in the correct format.", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "Error processing Excel file", e)
         }
     }
 
-    private fun convertMapToMemberRequest(memberMaps: List<Map<String, String>>): List<MemberRequest> {
+    private fun convertMapToMemberRequest(memberMaps: List<Map<String, String?>>): List<MemberRequest> {
         return memberMaps.mapNotNull { map ->
             try {
                 MemberRequest(
-                    otherName = map["other_name"]!!, lastName = map["last_name"]!!,
-                    gender = map["gender"]!!, dateOfBirth = formatDateForAPI(map["date_of_birth"]),
-                    email = map["email"]!!, phoneNumber = map["phone_number"]!!.toLong(),
-                    idNumber = map["id_number"]!!.toLong(),
-                    productInvolved = map["product_involved"]!!,
-                    hectorageRegisteredUnderCig = map["hectorage_registered_under_cig"]!!
+                    otherName = map["other_name"]!!,
+                    lastName = map["last_name"]!!,
+                    gender = map["gender"]!!,
+                    dateOfBirth = formatDateForAPI(map["date_of_birth"]),
+                    membershipNumber = map.getValue("membership_number")!!,
+                    registrationDate = formatDateForAPI(map.getValue("registration_date")),
+                    shareCapital = map.getValue("share_capital")!!.toDouble(),
+                    contribution = map.getValue("contribution")!!.toDouble(),
+                    membershipFee = map.getValue("membership_fee")!!.toDouble(),
+                    phoneNumber = map.getValue("phone_number")!!.filter { it.isDigit() }.toLong().toString(),
+                    email = map.getValue("email")!!,
+                    votingRights = map.getValue("voting_rights").toBoolean(),
+                    positionHeld = map.getValue("position_held")!!,
+                    membershipCategory = map.getValue("membership_category")!!,
+                    productOrService = map.getValue("product_or_service")!!
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Skipping invalid member row from Excel: $map", e)
@@ -298,67 +306,86 @@ class CIGFragment : Fragment() {
     }
 
     private fun submitCigDataToViewModel() {
-        if (!validateInputs()) {
-            Toast.makeText(context, "Please fix all errors before saving.", Toast.LENGTH_LONG).show()
-            return
-        }
+        if (!validateInputs()) { return }
 
         val cigData = CIG(
+            id = 0,
+            serverId = null,
             cigName = binding.cigName.text.toString(),
             hub = binding.inputHub.text.toString(),
             numberOfMembers = binding.inputNoMembers.text.toString().toInt(),
-            dateEstablished = (binding.cigYearEst.tag as? String) ?: "",
+            dateEstablished = binding.cigYearEst.tag.toString(),
             constitution = if (binding.radioGroupConstitution.checkedRadioButtonId == R.id.radio_constitution_yes) constitutionUrl else "No",
             registration = if (binding.radioGroupRegistration.checkedRadioButtonId == R.id.radio_registration_yes) registrationUrl else "No",
-            certificate = certificateUrl ?: "No",
-            membershipRegister = "Membership details from uploaded file.",
+            certificate = if (binding.radioGroupCertificate.checkedRadioButtonId == R.id.radio_certificate_yes) certificateUrl else "No",
+            membershipRegister = binding.editTextMembershipRegisterDescription.text.toString(),
             electionsHeld = if (binding.radioGroupElectionsHeld.checkedRadioButtonId == R.id.radio_election_held_yes) electionsHeldUrl else "No",
-            dateOfLastElections = (binding.cigLastElectionDate.tag as? String) ?: "",
+            dateOfLastElections = binding.cigLastElectionDate.tag.toString(),
             meetingVenue = binding.cigMeetingVenue.text.toString(),
-            frequency = binding.inputCigFrequency.text.toString(),
+            meetingFrequency = binding.inputCigFrequency.text.toString(),
             scheduledMeetingDay = binding.inputScheduledMeetingDay.text.toString(),
             scheduledMeetingTime = binding.inputScheduledMeetingTime.text.toString(),
+            membershipContributionAmount = binding.editTextContributionAmount.text.toString(),
+            membershipContributionFrequency = binding.spinnerContributionFrequency.text.toString(),
             userId = null,
-            membersJson = null
+            membersJson = null,
+            syncStatus = false
         )
 
-        viewModel.submitCIGData(cigData, membersFromExcel)
+        viewModel.submitCIGData(cigData, membersFromFile)
     }
 
-    private fun showDatePickerDialog(editText: EditText) {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(requireContext(), { _, year, month, day ->
-            val selectedDate = Calendar.getInstance().apply { set(year, month, day) }
+    private fun showDatePickerDialog(editText: EditText, title: String) {
+        val picker = MaterialDatePicker.Builder.datePicker().setTitleText(title).build()
+        picker.addOnPositiveButtonClickListener { selection ->
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply { timeInMillis = selection }
             val displayFormat = SimpleDateFormat("d MMMM, yyyy", Locale.US)
             val apiFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
-            editText.setText(displayFormat.format(selectedDate.time))
-            editText.tag = apiFormat.format(selectedDate.time)
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+            editText.setText(displayFormat.format(calendar.time))
+            editText.tag = apiFormat.format(calendar.time)
+        }
+        picker.show(childFragmentManager, "DATE_PICKER_${editText.id}")
     }
 
     private fun showTimePickerDialog(editText: EditText) {
-        val calendar = Calendar.getInstance()
-        TimePickerDialog(requireContext(), { _, hour, minute ->
-            val time = String.format(Locale.US, "%02d:%02d:00", hour, minute)
+        val picker = MaterialTimePicker.Builder()
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setTitleText("Select Meeting Time")
+            .build()
+        picker.addOnPositiveButtonClickListener {
+            val time = String.format(Locale.US, "%02d:%02d:00", picker.hour, picker.minute)
             editText.setText(time)
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+        }
+        picker.show(childFragmentManager, "TIME_PICKER_${editText.id}")
     }
 
-    private fun formatDateForAPI(excelDate: String?): String {
-        if (excelDate.isNullOrBlank()) return ""
+    private fun formatDateForAPI(dateString: String?): String {
+        if (dateString.isNullOrBlank()) return ""
         val possibleFormats = listOf(SimpleDateFormat("M/d/yy", Locale.US), SimpleDateFormat("MM/dd/yyyy", Locale.US))
         val targetFormat = SimpleDateFormat("yyyy-MM-dd'T'00:00:00'", Locale.US)
         for (format in possibleFormats) {
             try {
-                return format.parse(excelDate)?.let { targetFormat.format(it) } ?: excelDate
-            } catch (e: ParseException) { /* try next format */ }
+                format.parse(dateString)?.let { return targetFormat.format(it) }
+            } catch (e: ParseException) { /* Continue */ }
         }
-        return excelDate
+        return dateString
     }
 
     private fun validateInputs(): Boolean {
-        // Implement comprehensive validation here...
-        return true
+        var isValid = true
+        if (binding.cigName.text.isNullOrBlank()) {
+            binding.cigName.error = "CIG Name is required"
+            isValid = false
+        }
+        if (binding.inputHub.text.isNullOrBlank()) {
+            binding.inputHub.error = "Hub is required"
+            isValid = false
+        }
+       /* if (membersFromFile.isEmpty()) {
+            Toast.makeText(requireContext(), "A valid membership file must be uploaded.", Toast.LENGTH_LONG).show()
+            isValid = false
+        }*/
+        return isValid
     }
 
     override fun onDestroyView() {
