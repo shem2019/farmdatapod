@@ -50,6 +50,7 @@ class BasicInformationFragment : Fragment() {
         setupSpinners()
         setupDatePicker()
         setupButtonListeners()
+        setupFinancialDropdowns()
 
         primaryProducerRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -93,6 +94,12 @@ class BasicInformationFragment : Fragment() {
             resources.getStringArray(R.array.region_array)
         )
         binding.countyAutoCompleteTextView.setAdapter(countyAdapter)
+    }
+
+    private fun setupFinancialDropdowns() {
+        val providers = resources.getStringArray(R.array.mobile_money_providers)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, providers)
+        binding.mobileMoneyProviderAutoCompleteTextView.setAdapter(adapter)
     }
 
     private fun setupDatePicker() {
@@ -249,7 +256,7 @@ class BasicInformationFragment : Fragment() {
             // Retrieve values from form fields
             val otherName = binding.otherNameEditText.text.toString()
             val lastName = binding.lastNameEditText.text.toString()
-            val idNumber = binding.idNumberEditText.text.toString()
+            val idNumber = binding.idNumberEditText.text.toString().toLongOrNull() ?: 0L
             val email = binding.emailEditText.text.toString()
             val phone = binding.phoneEditText.text.toString()
             val location = binding.locationEditText.text.toString()
@@ -260,7 +267,6 @@ class BasicInformationFragment : Fragment() {
             val ward = binding.wardEditText.text.toString()
             val village = binding.villageEditText.text.toString()
 
-            // Retrieve the selected gender
             val selectedGenderId = binding.genderRadioGroup.checkedRadioButtonId
             val selectedGender = when (selectedGenderId) {
                 R.id.maleRadioButton -> "Male"
@@ -268,15 +274,24 @@ class BasicInformationFragment : Fragment() {
                 else -> "Not Selected"
             }
 
-            // Retrieve the selected primary producer option
             val selectedPrimaryProducerId = binding.primaryProducerRadioGroup.checkedRadioButtonId
             val isPrimaryProducer = when (selectedPrimaryProducerId) {
                 R.id.yesRadioButton -> "Yes"
                 R.id.noRadioButton -> "No"
-                else -> "" // Default value if no option is selected
+                else -> ""
             }
 
-            // Prepare data for primary producer
+            fun formatServerDate(dateString: String): String {
+                return try {
+                    val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    val outputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+                    val date = inputFormat.parse(dateString)
+                    date?.let { outputFormat.format(it) } ?: dateString
+                } catch (e: Exception) {
+                    dateString
+                }
+            }
+
             val primaryProducerData = if (isPrimaryProducer == "No") {
                 val firstNamePP = binding.firstNamePPEditText.text.toString()
                 val lastNamePP = binding.lastNamePPEditText.text.toString()
@@ -290,19 +305,25 @@ class BasicInformationFragment : Fragment() {
                     mapOf(
                         "response" to "No",
                         "firstname" to firstNamePP,
-                        "other_name" to otherName,
-                        "id_number" to idNumberPP,
+                        "other_name" to lastNamePP,
+                        "id_number" to (idNumberPP.toLongOrNull() ?: 0L),
                         "phone_number" to phoneNumberPP,
                         "gender" to genderPP,
                         "email" to emailPP,
-                        "date_of_birth" to dobPP
+                        "date_of_birth" to formatServerDate(dobPP)
                     )
                 )
             } else {
                 listOf(mapOf("response" to "Yes"))
             }
 
-            // Use SharedViewModel to store or process the data
+            // NEW: COLLECT FINANCIAL DATA
+            val bankName = binding.bankNameEditText.text.toString()
+            val bankAccountNumber = binding.bankAccountNumberEditText.text.toString()
+            val bankAccountHolder = binding.bankAccountHolderEditText.text.toString()
+            val mobileMoneyProvider = binding.mobileMoneyProviderAutoCompleteTextView.text.toString()
+            val mobileMoneyNumber = binding.mobileMoneyNumberEditText.text.toString()
+
             sharedViewModel.apply {
                 setFirstName(otherName)
                 setLastName(lastName)
@@ -318,16 +339,20 @@ class BasicInformationFragment : Fragment() {
                 setVillage(village)
                 setGender(selectedGender)
                 setPrimaryProducer(primaryProducerData)
+
+                // NEW: SAVE FINANCIAL DATA TO VIEWMODEL
+                setBankName(bankName.ifEmpty { null })
+                setBankAccountNumber(bankAccountNumber.ifEmpty { null })
+                setBankAccountHolder(bankAccountHolder.ifEmpty { null })
+                setMobileMoneyProvider(mobileMoneyProvider.ifEmpty { null })
+                setMobileMoneyNumber(mobileMoneyNumber.ifEmpty { null })
             }
 
-            // Provide feedback to the user
-            Snackbar.make(binding.root, "Next", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(binding.root, "Data saved", Snackbar.LENGTH_LONG).show()
         } else {
             Snackbar.make(binding.root, "Please correct the errors in the form", Snackbar.LENGTH_LONG).show()
         }
     }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

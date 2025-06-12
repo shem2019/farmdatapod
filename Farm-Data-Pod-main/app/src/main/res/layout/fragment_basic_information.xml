@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context="com.example.farmdatapod.produce.indipendent.biodata.BasicInformationFragment">
 
-<androidx.appcompat.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -197,7 +197,8 @@
                     android:id="@+id/dateOfBirthEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date" />
+                    android:inputType="date"
+                    android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -218,7 +219,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Sub County -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/subCountyInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -236,7 +236,6 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Ward -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/wardInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -254,7 +253,6 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Village -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/villageInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -272,15 +270,23 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/genderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/villageInputLayout" />
+
             <RadioGroup
                 android:id="@+id/genderRadioGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/villageInputLayout">
+                app:layout_constraintTop_toBottomOf="@id/genderTextView">
 
                 <RadioButton
                     android:id="@+id/maleRadioButton"
@@ -296,20 +302,23 @@
                     android:text="Female" />
             </RadioGroup>
 
+            <TextView
+                android:id="@+id/primaryProducerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Are you the primary producer?"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/genderRadioGroup" />
+
             <RadioGroup
                 android:id="@+id/primaryProducerRadioGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/genderRadioGroup">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Are you the primary producer?" />
+                app:layout_constraintTop_toBottomOf="@id/primaryProducerTextView">
 
                 <RadioButton
                     android:id="@+id/yesRadioButton"
@@ -321,22 +330,22 @@
                     android:id="@+id/noRadioButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:text="No" />
             </RadioGroup>
 
-            <!--Primary Producer Input Fields-->
             <TextView
                 android:id="@+id/primaryProducerDetailsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:text="Primary Producer Details"
+                android:layout_marginTop="16dp"
+                android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/primaryProducerRadioGroup"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/firstNamePPInputLayout"/>
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- First Name Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/firstNamePPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -355,7 +364,6 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Last Name Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lastNamePPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -374,7 +382,6 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- ID Number Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/idNumberPPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -393,7 +400,6 @@
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Phone Number Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/phoneNumberPPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -412,17 +418,25 @@
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Gender Input field -->
+            <TextView
+                android:id="@+id/genderPPTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gender"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/phoneNumberPPInputLayout" />
+
             <RadioGroup
                 android:id="@+id/genderPPRadioGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/phoneNumberPPInputLayout">
+                app:layout_constraintTop_toBottomOf="@id/genderPPTextView">
 
                 <RadioButton
                     android:id="@+id/malePPRadioButton"
@@ -438,7 +452,6 @@
                     android:text="Female" />
             </RadioGroup>
 
-            <!-- Email Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/emailPPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -457,7 +470,6 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Date of Birth Input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dateOfBirthPPInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -473,7 +485,104 @@
                     android:id="@+id/dateOfBirthPPEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="date" />
+                    android:inputType="date"
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/financialInfoTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Financial Information (Optional)"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dateOfBirthPPInputLayout"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/bankNameInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="Bank Name"
+                app:layout_constraintTop_toBottomOf="@id/financialInfoTitle"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/bankNameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/bankAccountNumberInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Bank Account Number"
+                app:layout_constraintTop_toBottomOf="@id/bankNameInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/bankAccountNumberEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/bankAccountHolderInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Bank Account Holder Name"
+                app:layout_constraintTop_toBottomOf="@id/bankAccountNumberInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/bankAccountHolderEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mobileMoneyProviderInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Mobile Money Provider"
+                app:layout_constraintTop_toBottomOf="@id/bankAccountHolderInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/mobileMoneyProviderAutoCompleteTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mobileMoneyNumberInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Mobile Money Number"
+                app:layout_constraintTop_toBottomOf="@id/mobileMoneyProviderInputLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mobileMoneyNumberEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

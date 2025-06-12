@@ -22,8 +22,8 @@ class SharedViewModel : ViewModel() {
     private val _lastName = MutableLiveData<String>()
     val lastName: LiveData<String> get() = _lastName
 
-    private val _idNumber = MutableLiveData<String>()
-    val idNumber: LiveData<String> get() = _idNumber
+    private val _idNumber = MutableLiveData<Long>()
+    val idNumber: LiveData<Long> get() = _idNumber
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> get() = _email
@@ -101,7 +101,7 @@ class SharedViewModel : ViewModel() {
         _lastName.value = value
     }
 
-    fun setIdNumber(value: String) {
+    fun setIdNumber(value: Long) {
         _idNumber.value = value
     }
 
@@ -464,8 +464,8 @@ class SharedViewModel : ViewModel() {
                 val producer = ProducerEntity(
                     otherName = _otherName.value ?: "",
                     lastName = _lastName.value ?: "",
-                    idNumber = _idNumber.value ?: "",
-                    farmerCode = _idNumber.value ?: "",
+                    idNumber = _idNumber.value ?: 0L,
+                    farmerCode = _idNumber.value?.toString() ?: "",
                     email = _email.value,
                     phoneNumber = _phone.value ?: "",
                     location = _location.value ?: "",
@@ -589,7 +589,7 @@ class SharedViewModel : ViewModel() {
     private fun clearForm() {
         _otherName.value = ""
         _lastName.value = ""
-        _idNumber.value = ""
+        _idNumber.value = 0L
         _email.value = ""
         _phone.value = ""
         _location.value = ""

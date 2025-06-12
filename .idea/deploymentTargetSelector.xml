@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="FarmDataPod.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-07T08:11:36.566073Z">
+        <DropdownSelection timestamp="2025-06-12T08:17:52.344073800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=0151428S3510122B" />

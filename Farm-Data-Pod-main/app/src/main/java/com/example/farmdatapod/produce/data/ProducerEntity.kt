@@ -22,7 +22,7 @@ data class ProducerEntity(
     val lastName: String,
 
     @ColumnInfo(name = "id_number")
-    val idNumber: String,
+    val idNumber: Long?,
 
     @ColumnInfo(name = "farmer_code")
     val farmerCode: String,

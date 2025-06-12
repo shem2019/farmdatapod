@@ -35,29 +35,32 @@ class LabourAndChallengesFragment : Fragment() {
     }
 
     private fun setupAutoCompleteTextViews() {
-        val autoCompleteTextViews: List<Pair<AutoCompleteTextView, Int>> = listOf(
-            binding.knowledgeRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.qualityRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.soilRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.marketRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.compostRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.foodLossRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.nutritionRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.financeRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.pestsRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.weatherRelatedAutoCompleteTextView to R.array.knowledge_related_options,
-            binding.diseaseRelatedAutoCompleteTextView to R.array.knowledge_related_options
+        // *** FIX: Changed the options to a simple "Yes" or "No" array ***
+        // This ensures the data sent to the server matches its expectations.
+        val options = arrayOf("Yes", "No")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, options)
+
+        val autoCompleteTextViews: List<AutoCompleteTextView> = listOf(
+            binding.knowledgeRelatedAutoCompleteTextView,
+            binding.qualityRelatedAutoCompleteTextView,
+            binding.soilRelatedAutoCompleteTextView,
+            binding.marketRelatedAutoCompleteTextView,
+            binding.compostRelatedAutoCompleteTextView,
+            binding.foodLossRelatedAutoCompleteTextView,
+            binding.nutritionRelatedAutoCompleteTextView,
+            binding.financeRelatedAutoCompleteTextView,
+            binding.pestsRelatedAutoCompleteTextView,
+            binding.weatherRelatedAutoCompleteTextView,
+            binding.diseaseRelatedAutoCompleteTextView
         )
 
-        autoCompleteTextViews.forEach { (autoCompleteTextView, optionsArrayResId) ->
-            val options = resources.getStringArray(optionsArrayResId)
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, options)
+        autoCompleteTextViews.forEach { autoCompleteTextView ->
             autoCompleteTextView.setAdapter(adapter)
         }
     }
 
     private fun setupButtonListeners() {
-
+        // Listeners can be added here if needed in the future
     }
 
     fun validateForm(): Boolean {
@@ -80,21 +83,21 @@ class LabourAndChallengesFragment : Fragment() {
         }
 
         // Validate Challenges
-        val challenges = mapOf(
-            "Knowledge" to binding.knowledgeRelatedAutoCompleteTextView.text.toString(),
-            "Quality" to binding.qualityRelatedAutoCompleteTextView.text.toString(),
-            "Soil" to binding.soilRelatedAutoCompleteTextView.text.toString(),
-            "Market" to binding.marketRelatedAutoCompleteTextView.text.toString(),
-            "Compost" to binding.compostRelatedAutoCompleteTextView.text.toString(),
-            "Food Loss" to binding.foodLossRelatedAutoCompleteTextView.text.toString(),
-            "Nutrition" to binding.nutritionRelatedAutoCompleteTextView.text.toString(),
-            "Finance" to binding.financeRelatedAutoCompleteTextView.text.toString(),
-            "Pests" to binding.pestsRelatedAutoCompleteTextView.text.toString(),
-            "Weather" to binding.weatherRelatedAutoCompleteTextView.text.toString(),
-            "Disease" to binding.diseaseRelatedAutoCompleteTextView.text.toString()
+        val challenges = listOf(
+            binding.knowledgeRelatedAutoCompleteTextView,
+            binding.qualityRelatedAutoCompleteTextView,
+            binding.soilRelatedAutoCompleteTextView,
+            binding.marketRelatedAutoCompleteTextView,
+            binding.compostRelatedAutoCompleteTextView,
+            binding.foodLossRelatedAutoCompleteTextView,
+            binding.nutritionRelatedAutoCompleteTextView,
+            binding.financeRelatedAutoCompleteTextView,
+            binding.pestsRelatedAutoCompleteTextView,
+            binding.weatherRelatedAutoCompleteTextView,
+            binding.diseaseRelatedAutoCompleteTextView
         )
 
-        if (challenges.values.any { it.isBlank() }) {
+        if (challenges.any { it.text.isBlank() }) {
             showToast("Please fill out all challenge fields.")
             isValid = false
         }

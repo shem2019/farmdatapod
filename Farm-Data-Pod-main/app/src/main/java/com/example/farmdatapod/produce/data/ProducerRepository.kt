@@ -245,7 +245,7 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             serverId = serverProducer.id,
             otherName = serverProducer.other_name ?: "",
             lastName = serverProducer.last_name ?: "",
-            idNumber = serverProducer.id_number ?: "",
+            idNumber = serverProducer.id_number,
             farmerCode = serverProducer.farmer_code ?: "",
             email = serverProducer.email,
             phoneNumber = serverProducer.phone_number ?: "",
@@ -332,13 +332,29 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
     }
 
     private fun createProducerRequest(producer: ProducerEntity): ProducerBiodataRequest {
+        // Helper function to convert date from "dd/MM/yyyy" to "yyyy-MM-dd'T'HH:mm:ss"
+        fun formatServerDate(dateString: String): String {
+            if (dateString.isBlank()) return ""
+            return try {
+                val inputFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+                val outputFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault())
+                val date = inputFormat.parse(dateString)
+                date?.let { outputFormat.format(it) } ?: ""
+            } catch (e: Exception) {
+                // If format is already correct or something else, return as is.
+                // Consider logging this error.
+                Log.e(TAG, "Could not parse date: $dateString", e)
+                "" // Or return dateString if you expect it might already be in correct format
+            }
+        }
+
         return ProducerBiodataRequest(
             id = producer.serverId,
             other_name = producer.otherName,
             last_name = producer.lastName,
-            id_number = producer.idNumber,
+            id_number = producer.idNumber, // Convert to Long
             farmer_code = producer.farmerCode,
-            date_of_birth = producer.dateOfBirth,
+            date_of_birth = formatServerDate(producer.dateOfBirth), // Format the date
             email = producer.email,
             phone_number = producer.phoneNumber,
             location = producer.location,
@@ -351,10 +367,10 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             ward = producer.ward,
             village = producer.village,
             primary_producer = producer.primaryProducer,
-            total_land_size = producer.totalLandSize.toString(),
-            cultivate_land_size = producer.cultivatedLandSize.toString(),
-            homestead_size = producer.homesteadSize.toString(),
-            uncultivated_land_size = producer.uncultivatedLandSize.toString(),
+            total_land_size = "${producer.totalLandSize} ha", // Append unit
+            cultivate_land_size = "${producer.cultivatedLandSize} ha", // Append unit
+            homestead_size = "${producer.homesteadSize} ha", // Append unit
+            uncultivated_land_size = "${producer.uncultivatedLandSize} ha", // Append unit
             farm_accessibility = producer.farmAccessibility,
             number_of_family_workers = producer.familyLabor.toString(),
             number_of_hired_workers = producer.hiredLabor.toString(),
@@ -379,7 +395,7 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             pigs = producer.pigs.toString(),
             poultry = producer.poultry.toString(),
             camels = producer.camels.toString(),
-            aquaculture = if (producer.aquaculture == 1) "Yes" else "No",
+            aquaculture = producer.aquaculture.toString(), // Send as number string "1" or "0"
             rabbits = producer.rabbits.toString(),
             beehives = producer.beehives.toString(),
             donkeys = producer.donkeys.toString(),
@@ -401,14 +417,14 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
                 mapOf(
                     "product" to it.name,
                     "product_category" to it.unit,
-                    "acerage" to it.quantity
+                    "acreage" to it.quantity // FIX: Corrected typo "acerage" to "acreage"
                 )
             } ?: emptyList(),
             domesticProduces = producer.ownConsumptionList?.map {
                 mapOf(
                     "product" to it.name,
                     "product_category" to it.unit,
-                    "acerage" to it.quantity
+                    "acreage" to it.quantity // FIX: Corrected typo "acerage" to "acreage"
                 )
             } ?: emptyList(),
             bank_name = producer.bankName, // Added
@@ -418,7 +434,6 @@ class ProducerRepository(private val context: Context) : SyncableRepository {
             mobile_money_number = producer.mobileMoneyNumber // Added
         )
     }
-
 
     override suspend fun performFullSync(): Result<SyncStats> = withContext(Dispatchers.IO) {
         try {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mobile_money_providers">
+        <item>M-Pesa</item>
+        <item>Airtel Money</item>
+        <item>T-kash</item>
+    </string-array>
+</resources>

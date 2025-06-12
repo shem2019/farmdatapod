@@ -5,9 +5,11 @@ data class ProducerBiodataRequest(
     val other_name: String?,
     val last_name: String?,
     val farmer_code: String?,
-    val id_number: String?,
+    // FIX: This must be a Long?, not a String?
+    val id_number: Long?,
     val date_of_birth: String?,
     val email: String?,
+    // ... rest of the file is correct
     val phone_number: String?,
     val location: String?,
     val hub: String?,
@@ -67,9 +69,9 @@ data class ProducerBiodataRequest(
     val toilet_floor: String? = "Concrete",
     val commercialProduces: List<Map<String, Any?>>?,
     val domesticProduces: List<Map<String, Any?>>?,
-    val bank_name: String?, // Added
-    val bank_account_number: String?, // Added
-    val bank_account_holder: String?, // Added
-    val mobile_money_provider: String?, // Added
-    val mobile_money_number: String? // Added
+    val bank_name: String?,
+    val bank_account_number: String?,
+    val bank_account_holder: String?,
+    val mobile_money_provider: String?,
+    val mobile_money_number: String?
 )
