@@ -11,8 +11,8 @@ import com.example.farmdatapod.sync.SyncableRepository
 import com.example.farmdatapod.utils.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class FieldRegistrationRepository(private val context: Context) : SyncableRepository {
     private val TAG = "FieldRegistrationRepo"
@@ -42,21 +42,26 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
                 try {
                     Log.d(TAG, "Attempting server sync...")
                     val request = createFieldRegistrationRequest(fieldRegistration, crops)
-                    // Direct suspend function call without execute()
+
+                    // This suspend fun returns Response<Void>, so the body is empty.
                     val response = apiService.registerFarmerField(request)
 
                     if (response.isSuccessful) {
+                        // The POST was successful. We can't get an ID back, but we can
+                        // mark the local data as synced.
+                        Log.d(TAG, "Field registration synced successfully (POST successful)")
                         fieldRegistrationDao.updateFieldRegistrationSyncStatus(
                             registrationId.toInt(),
                             true
                         )
                         fieldRegistrationDao.updateCropsSyncStatus(registrationId.toInt(), true)
-                        Log.d(TAG, "Field registration synced successfully")
                     } else {
-                        Log.e(TAG, "Server sync failed: ${response.errorBody()?.string()}")
+                        Log.e(TAG, "Server sync failed with code ${response.code()}: ${response.errorBody()?.string()}")
                     }
+                } catch (e: IOException) {
+                    Log.e(TAG, "Network error during server sync", e)
                 } catch (e: Exception) {
-                    Log.e(TAG, "Error during server sync", e)
+                    Log.e(TAG, "Unexpected error during server sync", e)
                 }
             }
 
@@ -82,9 +87,13 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
                         registration.fieldRegistration,
                         registration.crops
                     )
+                    // This suspend fun returns Response<Void>, so the body is empty.
                     val response = apiService.registerFarmerField(request)
 
                     if (response.isSuccessful) {
+                        // The POST was successful. We can't get an ID back, but we can
+                        // mark the local data as synced.
+                        Log.d(TAG, "Successfully synced registration ${registration.fieldRegistration.id}")
                         fieldRegistrationDao.updateFieldRegistrationSyncStatus(
                             registration.fieldRegistration.id,
                             true
@@ -94,10 +103,9 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
                             true
                         )
                         successCount++
-                        Log.d(TAG, "Successfully synced registration ${registration.fieldRegistration.id}")
                     } else {
                         failureCount++
-                        Log.e(TAG, "Failed to sync registration ${registration.fieldRegistration.id}")
+                        Log.e(TAG, "Failed to sync registration ${registration.fieldRegistration.id}: ${response.errorBody()?.string()}")
                     }
                 } catch (e: Exception) {
                     failureCount++
@@ -115,64 +123,67 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
     override suspend fun syncFromServer(): Result<Int> = withContext(Dispatchers.IO) {
         try {
             Log.d(TAG, "Starting GET request to fetch field registrations")
+            // This function returns Call<T>, so .execute() IS needed
             val response = apiService.getFarmerFieldRegistrations().execute()
 
-            when (response.code()) {
-                200 -> {
-                    val serverRegistrations = response.body()
-                    if (serverRegistrations.isNullOrEmpty()) {
-                        Log.d(TAG, "Server returned empty response")
-                        return@withContext Result.success(0)
+            if (!response.isSuccessful) {
+                Log.e(TAG, "Unexpected response code: ${response.code()}")
+                return@withContext Result.failure(Exception("Server error: ${response.code()}"))
+            }
+
+            val serverRegistrations = response.body()
+            if (serverRegistrations.isNullOrEmpty()) {
+                Log.d(TAG, "Server returned no new registrations")
+                return@withContext Result.success(0)
+            }
+
+            var savedCount = 0
+            serverRegistrations.forEach { serverRegistration ->
+                try {
+                    // Check if we already have this registration by server_id
+                    val existing = fieldRegistrationDao.getFieldRegistrationByServerId(serverRegistration.id)
+                    if (existing != null) {
+                        // If it exists, we might just need to update its sync status or other fields
+                        // For now, we'll just log and skip to prevent duplicates
+                        Log.d(TAG, "Registration with server ID ${serverRegistration.id} already exists.")
+                        return@forEach
                     }
 
-                    var savedCount = 0
-                    serverRegistrations.forEach { serverRegistration ->
-                        try {
-                            // Convert server response to local entity
-                            val fieldRegistration = FieldRegistrationEntity(
-                                serverId = serverRegistration.id,
-                                producerId = serverRegistration.producer,
-                                fieldNumber = serverRegistration.field_number,
-                                fieldSize = serverRegistration.field_size,
-                                userId = "current_user_id", // Get from your auth system
-                                syncStatus = true
-                            )
+                    // Convert server response to local entity
+                    val fieldRegistration = FieldRegistrationEntity(
+                        serverId = serverRegistration.id,
+                        producerId = serverRegistration.producer,
+                        fieldNumber = serverRegistration.field_number,
+                        fieldSize = serverRegistration.field_size,
+                        userId = "current_user_id", // Replace with actual user ID
+                        syncStatus = true
+                    )
 
-                            // Convert crops
-                            val crops = serverRegistration.crops.map { cropResponse ->
-                                CropEntity(
-                                    cropName = cropResponse.crop_name,
-                                    cropVariety = cropResponse.crop_variety,
-                                    datePlanted = cropResponse.date_planted,
-                                    dateOfHarvest = cropResponse.date_of_harvest,
-                                    population = cropResponse.population,
-                                    baselineYield = cropResponse.baseline_yield,
-                                    baselineIncome = cropResponse.baseline_income,
-                                    baselineCost = cropResponse.baseline_cost,
-                                    syncStatus = true,
-                                    fieldRegistrationId = 0 // This will be updated after registration is saved
-                                )
-                            }
-
-                            // Save to local database
-                            fieldRegistrationDao.insertFieldRegistrationWithCrops(fieldRegistration, crops)
-                            savedCount++
-                            Log.d(TAG, "Saved registration ${serverRegistration.id}")
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error saving registration ${serverRegistration.id}", e)
-                        }
+                    // Convert crops
+                    val crops = serverRegistration.crops.map { cropResponse ->
+                        CropEntity(
+                            cropName = cropResponse.crop_name,
+                            cropVariety = cropResponse.crop_variety,
+                            datePlanted = cropResponse.date_planted,
+                            dateOfHarvest = cropResponse.date_of_harvest,
+                            population = cropResponse.population,
+                            baselineYield = cropResponse.baseline_yield_last_season,
+                            baselineIncome = cropResponse.baseline_income_last_season,
+                            baselineCost = cropResponse.baseline_cost_of_production_last_season,
+                            sold = cropResponse.sold,
+                            syncStatus = true,
+                            fieldRegistrationId = 0
+                        )
                     }
-                    Result.success(savedCount)
-                }
-                401, 403 -> {
-                    Log.e(TAG, "Authentication error: ${response.code()}")
-                    Result.failure(Exception("Authentication error"))
-                }
-                else -> {
-                    Log.e(TAG, "Unexpected response: ${response.code()}")
-                    Result.failure(Exception("Server error"))
+
+                    fieldRegistrationDao.insertFieldRegistrationWithCrops(fieldRegistration, crops)
+                    savedCount++
+                    Log.d(TAG, "Saved new registration from server with ID ${serverRegistration.id}")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error saving registration with server ID ${serverRegistration.id}", e)
                 }
             }
+            Result.success(savedCount)
         } catch (e: Exception) {
             Log.e(TAG, "Error syncing from server", e)
             Result.failure(e)
@@ -197,7 +208,6 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
         }
     }
 
-    // Helper function to create API request
     private fun createFieldRegistrationRequest(
         fieldRegistration: FieldRegistrationEntity,
         crops: List<CropEntity>
@@ -206,17 +216,24 @@ class FieldRegistrationRepository(private val context: Context) : SyncableReposi
             producer = fieldRegistration.producerId,
             field_number = fieldRegistration.fieldNumber,
             field_size = fieldRegistration.fieldSize,
-            crops = crops.map { crop ->
-                Crop(
-                    crop_name = crop.cropName,
-                    crop_variety = crop.cropVariety,
-                    date_planted = crop.datePlanted,
-                    date_of_harvest = crop.dateOfHarvest,
-                    population = crop.population,
-                    baseline_yield = crop.baselineYield,
-                    baseline_income = crop.baselineIncome,
-                    baseline_cost = crop.baselineCost
-                )
+            crops = crops.mapNotNull { crop ->
+                if (crop.cropName == null || crop.cropVariety == null || crop.datePlanted == null ||
+                    crop.dateOfHarvest == null || crop.population == null || crop.baselineYield == null ||
+                    crop.baselineIncome == null || crop.baselineCost == null) {
+                    null
+                } else {
+                    Crop(
+                        crop_name = crop.cropName,
+                        crop_variety = crop.cropVariety,
+                        date_planted = crop.datePlanted,
+                        date_of_harvest = crop.dateOfHarvest,
+                        population = crop.population,
+                        baseline_yield_last_season = crop.baselineYield,
+                        baseline_income_last_season = crop.baselineIncome,
+                        baseline_cost_of_production_last_season = crop.baselineCost,
+                        sold = crop.sold ?: false
+                    )
+                }
             }
         )
     }

@@ -18,9 +18,14 @@ interface FieldRegistrationDao {
     @Query("SELECT * FROM field_registrations WHERE id = :id")
     suspend fun getFieldRegistrationById(id: Int): FieldRegistrationWithCrops?
 
+    @Transaction // <-- Add this
+    @Query("SELECT * FROM field_registrations WHERE server_id = :serverId")
+    suspend fun getFieldRegistrationByServerId(serverId: Int): FieldRegistrationWithCrops?
+
     @Query("SELECT * FROM field_registrations WHERE producer_id = :producerId")
     fun getFieldRegistrationsByProducer(producerId: String): Flow<List<FieldRegistrationWithCrops>>
 
+    @Transaction // <-- Add this
     @Query("SELECT * FROM field_registrations WHERE sync_status = 0")
     suspend fun getUnsyncedFieldRegistrations(): List<FieldRegistrationWithCrops>
 
@@ -35,6 +40,14 @@ interface FieldRegistrationDao {
         fieldRegistration: FieldRegistrationEntity,
         crops: List<CropEntity>
     ) {
+        // Check for existing server_id to prevent duplicates from sync
+        if (fieldRegistration.serverId != null) {
+            val existing = getFieldRegistrationByServerId(fieldRegistration.serverId)
+            if (existing != null) {
+                // Optionally update existing record or just return
+                return
+            }
+        }
         val fieldRegistrationId = insertFieldRegistration(fieldRegistration)
         crops.forEach { crop ->
             insertCrop(crop.copy(fieldRegistrationId = fieldRegistrationId.toInt()))
@@ -43,6 +56,9 @@ interface FieldRegistrationDao {
 
     @Query("UPDATE field_registrations SET sync_status = :status WHERE id = :id")
     suspend fun updateFieldRegistrationSyncStatus(id: Int, status: Boolean)
+
+    @Query("UPDATE field_registrations SET server_id = :serverId WHERE id = :localId")
+    suspend fun updateFieldRegistrationServerId(localId: Int, serverId: Int)
 
     @Query("UPDATE crops SET sync_status = :status WHERE field_registration_id = :fieldRegistrationId")
     suspend fun updateCropsSyncStatus(fieldRegistrationId: Int, status: Boolean)

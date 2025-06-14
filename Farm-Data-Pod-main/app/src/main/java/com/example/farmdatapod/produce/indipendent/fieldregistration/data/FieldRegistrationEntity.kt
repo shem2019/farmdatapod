@@ -9,8 +9,8 @@ data class FieldRegistrationEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    @ColumnInfo(name = "server_id")  // Add this field
-    val serverId: Int? = null,       // Nullable since it won't exist until synced
+    @ColumnInfo(name = "server_id")
+    val serverId: Int? = null,
 
     @ColumnInfo(name = "producer_id")
     val producerId: String,
@@ -19,7 +19,7 @@ data class FieldRegistrationEntity(
     val fieldNumber: Int,
 
     @ColumnInfo(name = "field_size")
-    val fieldSize: String,
+    val fieldSize: Float, // <-- Changed from String to Float
 
     @ColumnInfo(name = "user_id")
     val userId: String,

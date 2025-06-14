@@ -9,7 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-class FarmDataPodApplication : Application() {
+class
+FarmDataPodApplication : Application() {
     lateinit var syncManager: SyncManager
     lateinit var tokenManager: TokenManager
 
@@ -30,7 +31,7 @@ class FarmDataPodApplication : Application() {
             val sharedPrefs = SharedPrefs(applicationContext) //
 
             // Step 2: Initialize TokenManager with the SharedPrefs instance
-            tokenManager = TokenManager(sharedPrefs) // Fix for line 29: Pass SharedPrefs instead of Context
+            tokenManager = TokenManager(sharedPrefs)
 
             // Initialize SyncManager as it depends on Context (its constructor was not changed)
             syncManager = SyncManager(applicationContext)

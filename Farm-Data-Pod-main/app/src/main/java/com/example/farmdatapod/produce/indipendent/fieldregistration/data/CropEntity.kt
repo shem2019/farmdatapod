@@ -38,16 +38,16 @@ data class CropEntity(
     val dateOfHarvest: String? = null,
 
     @ColumnInfo(name = "population")
-    val population: String? = null,
+    val population: Int? = null, // <-- Changed from String to Int
 
     @ColumnInfo(name = "baseline_yield_last_season")
     val baselineYield: Double? = null,
 
     @ColumnInfo(name = "baseline_income_last_season")
-    val baselineIncome: String? = null,
+    val baselineIncome: Double? = null, // <-- Changed from String to Double
 
     @ColumnInfo(name = "baseline_cost_of_production_last_season")
-    val baselineCost: String? = null,
+    val baselineCost: Double? = null, // <-- Changed from String to Double
 
     @ColumnInfo(name = "sync_status")
     val syncStatus: Boolean = false,
